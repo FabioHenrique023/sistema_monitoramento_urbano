@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Models.Repositorio.Entidades
 {
-    public class Videos
+    public class Video
     {
         public virtual int Id { get; set; }
 
@@ -29,7 +29,7 @@ namespace Models.Repositorio.Entidades
 
         // Construtor para garantir que todos os campos obrigatórios sejam preenchidos
         [SetsRequiredMembers]
-        public Videos(string nomeArquivo, string caminhoArquivo, string dataUpload, string horarioInicio, int idUsuario, int cameraId)
+        public Video(string nomeArquivo, string caminhoArquivo, string dataUpload, string horarioInicio, int idUsuario, int cameraId)
         {
             NomeArquivo    = nomeArquivo;
             CaminhoArquivo = caminhoArquivo;
@@ -40,6 +40,6 @@ namespace Models.Repositorio.Entidades
         }
 
         // Necessário para o EF Core
-        public Videos() { }
+        public Video() { }
     }
 }

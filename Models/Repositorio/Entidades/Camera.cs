@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Models.Repositorio.Entidades
 {
-    public class Cameras
+    public class Camera
     {
         public int Id { get; set; }
 
@@ -21,7 +21,7 @@ namespace Models.Repositorio.Entidades
 
         // Construtor para garantir que todos os campos obrigatórios sejam preenchidos
         [SetsRequiredMembers]
-        public Cameras(string descricao, double latitude, double longitude, string fps)
+        public Camera(string descricao, double latitude, double longitude, string fps)
         {
             Descricao = descricao;
             Latitude  = latitude;
@@ -30,6 +30,6 @@ namespace Models.Repositorio.Entidades
         }
 
         // Necessário para o EF Core
-        protected Cameras() { }
+        protected Camera() { }
     }
 }
