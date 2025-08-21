@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("sistema_monitoramento_urbano")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8c23dc2a886b45e2a2c0985e5974f975a9a97252")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+155cdbbc11e992a10e1e2e5645ac2cd9cf8812a3")]
 [assembly: System.Reflection.AssemblyProductAttribute("sistema_monitoramento_urbano")]
 [assembly: System.Reflection.AssemblyTitleAttribute("sistema_monitoramento_urbano")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
