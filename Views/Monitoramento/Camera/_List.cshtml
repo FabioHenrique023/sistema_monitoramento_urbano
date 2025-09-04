@@ -2,7 +2,7 @@
 @{
     var camera = ViewBag.Camera as IEnumerable<Camera> ?? Enumerable.Empty<Camera>();
 }
-<div class="bg-white rounded-xl shadow">
+<div class="bg-white rounded-xl shadow border border-gray-100 mt-6">
   <table class="min-w-full text-sm">
     <thead class="bg-gray-50 text-gray-600">
       <tr>
@@ -24,7 +24,7 @@
       foreach (var c in camera)
       {
         <tr class="border-t">
-          <td class="px-4 py-2">@c.Id</td>
+          <td class="px-4 py-2 font-medium text-gray-900">@c.Id</td>
           <td class="px-4 py-2">@c.Descricao</td>
           <td class="px-4 py-2">@c.Latitude</td>
           <td class="px-4 py-2">@c.Longitude</td>

@@ -1,34 +1,98 @@
 @model Models.ViewModel.CameraViewModel
 
-<form asp-controller="Camera" asp-action="Create" method="post"
-      class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-5 rounded-xl shadow">
-  <div>
-    <label class="block text-sm font-medium mb-1">Descrição</label>
-    <input asp-for="Descricao" class="w-full rounded-lg border px-3 py-2" placeholder="Ex.: Av. Central - Semáforo 1"/>
-    <span asp-validation-for="Descricao" class="text-red-600 text-xs"></span>
-  </div>
+<div class="relative bg-white p-6 rounded-xl shadow-lg border border-gray-100">
 
-  <div>
-    <label class="block text-sm font-medium mb-1">FPS</label>
-    <input asp-for="Fps" class="w-full rounded-lg border px-3 py-2" placeholder="30"/>
-    <span asp-validation-for="Fps" class="text-red-600 text-xs"></span>
-  </div>
+  <!-- Ícone de ajuda no canto superior direito -->
+  <button type="button" onclick="openHelp('camera')" 
+          class="absolute top-4 right-4 text-gray-400 hover:text-indigo-600">
+    <img src="/imagens/help_icon.png" alt="Ajuda" class="h-5 w-5 opacity-80 hover:opacity-100" />
+  </button>
 
-  <div>
-    <label class="block text-sm font-medium mb-1">Latitude</label>
-    <input asp-for="Latitude" type="number" step="any" class="w-full rounded-lg border px-3 py-2" placeholder="-17.7923"/>
-    <span asp-validation-for="Latitude" class="text-red-600 text-xs"></span>
-  </div>
+  <form asp-controller="Camera" asp-action="Create" method="post"
+        class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-  <div>
-    <label class="block text-sm font-medium mb-1">Longitude</label>
-    <input asp-for="Longitude" type="number" step="any" class="w-full rounded-lg border px-3 py-2" placeholder="-50.9431"/>
-    <span asp-validation-for="Longitude" class="text-red-600 text-xs"></span>
-  </div>
+    <!-- Descrição -->
+    <div class="md:col-span-2">
+      <label class="block text-sm font-semibold mb-1">
+        Descrição <span class="text-red-600">*</span>
+      </label>
+      <input asp-for="Descricao" placeholder="Ex.: Av. Central - Semáforo 1"
+             class="w-full rounded-lg border border-gray-300 px-3 py-2 
+                    focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"/>
+      <span asp-validation-for="Descricao" class="text-red-600 text-xs"></span>
+    </div>
 
-  <div class="md:col-span-2 flex justify-end">
-    <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
-      Salvar Câmera
-    </button>
+    <!-- FPS -->
+    <div>
+      <label class="block text-sm font-semibold mb-1">
+        FPS <span class="text-red-600">*</span>
+      </label>
+      <input asp-for="Fps" placeholder="30"
+             class="w-full rounded-lg border border-gray-300 px-3 py-2 
+                    focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"/>
+      <span asp-validation-for="Fps" class="text-red-600 text-xs"></span>
+    </div>
+
+    <!-- Latitude -->
+    <div>
+      <label class="block text-sm font-semibold mb-1">
+        Latitude <span class="text-red-600">*</span>
+      </label>
+      <input asp-for="Latitude" type="number" step="any" placeholder="-17.7923"
+             class="w-full rounded-lg border border-gray-300 px-3 py-2 
+                    focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"/>
+      <span asp-validation-for="Latitude" class="text-red-600 text-xs"></span>
+    </div>
+
+    <!-- Longitude -->
+    <div>
+      <label class="block text-sm font-semibold mb-1">
+        Longitude <span class="text-red-600">*</span>
+      </label>
+      <input asp-for="Longitude" type="number" step="any" placeholder="-50.9431"
+             class="w-full rounded-lg border border-gray-300 px-3 py-2 
+                    focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"/>
+      <span asp-validation-for="Longitude" class="text-red-600 text-xs"></span>
+    </div>
+
+    <!-- Botão -->
+    <div class="md:col-span-2 flex justify-end">
+      <button type="submit"
+              class="px-5 py-2.5 bg-indigo-600 text-white rounded-lg font-medium 
+                     shadow hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 transition">
+        Salvar Câmera
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- Modal de Ajuda -->
+<div id="helpModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+  <div class="bg-white rounded-xl shadow-xl p-6 max-w-3xl w-full">
+    <h3 class="text-lg font-bold mb-4">Exemplo de preenchimento</h3>
+    <img id="helpImage" src="" alt="Exemplo" class="rounded-lg shadow-md max-h-[70vh] mx-auto"/>
+    <div class="mt-4 flex justify-end">
+      <button onclick="closeHelp()" 
+              class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">
+        Fechar
+      </button>
+    </div>
   </div>
-</form>
+</div>
+
+<script>
+ function openHelp(type) {
+    const modal = document.getElementById('helpModal');
+    const img = document.getElementById('helpImage');
+
+    if (type === 'camera') {
+      img.src = '/imagens/help_camera.png';
+    }
+
+    modal.classList.remove('hidden');
+  }
+
+  function closeHelp() {
+    document.getElementById('helpModal').classList.add('hidden');
+  }
+</script>
