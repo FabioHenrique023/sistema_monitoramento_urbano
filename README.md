@@ -17,7 +17,7 @@
 
 * [x] Criada entidade **Cameras**
 * [x] Criada entidade **Videos**
-* [ ] Criar camada de **Controller** para validações de `DataUpload` e `HorarioInicio`
+* [ ] Criar camada de **Controller** para validações de `data_upload` e `horario_inicio`
 * [ ] Implementar **repositório** para persistência com **Entity Framework**
 * [ ] Criar **Views** com Razor Pages para gerenciamento
 * [ ] Aplicar **TailwindCSS** no front-end para estilização

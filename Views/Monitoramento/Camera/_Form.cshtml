@@ -1,0 +1,34 @@
+@model Models.ViewModel.CameraViewModel
+
+<form asp-controller="Camera" asp-action="Create" method="post"
+      class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-5 rounded-xl shadow">
+  <div>
+    <label class="block text-sm font-medium mb-1">Descrição</label>
+    <input asp-for="Descricao" class="w-full rounded-lg border px-3 py-2" placeholder="Ex.: Av. Central - Semáforo 1"/>
+    <span asp-validation-for="Descricao" class="text-red-600 text-xs"></span>
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium mb-1">FPS</label>
+    <input asp-for="Fps" class="w-full rounded-lg border px-3 py-2" placeholder="30"/>
+    <span asp-validation-for="Fps" class="text-red-600 text-xs"></span>
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium mb-1">Latitude</label>
+    <input asp-for="Latitude" type="number" step="any" class="w-full rounded-lg border px-3 py-2" placeholder="-17.7923"/>
+    <span asp-validation-for="Latitude" class="text-red-600 text-xs"></span>
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium mb-1">Longitude</label>
+    <input asp-for="Longitude" type="number" step="any" class="w-full rounded-lg border px-3 py-2" placeholder="-50.9431"/>
+    <span asp-validation-for="Longitude" class="text-red-600 text-xs"></span>
+  </div>
+
+  <div class="md:col-span-2 flex justify-end">
+    <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+      Salvar Câmera
+    </button>
+  </div>
+</form>

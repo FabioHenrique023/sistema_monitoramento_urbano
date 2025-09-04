@@ -1,0 +1,46 @@
+@model Models.ViewModel.VideoViewModel
+
+<form asp-controller="Video" asp-action="Create" method="post"
+      class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-5 rounded-xl shadow">
+  <div>
+    <label class="block text-sm font-medium mb-1">Nome do Arquivo</label>
+    <input asp-for="nome_arquivo" class="w-full rounded-lg border px-3 py-2"/>
+    <span asp-validation-for="nome_arquivo" class="text-red-600 text-xs"></span>
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium mb-1">Caminho/URL</label>
+    <input asp-for="caminho_arquivo" class="w-full rounded-lg border px-3 py-2"/>
+    <span asp-validation-for="caminho_arquivo" class="text-red-600 text-xs"></span>
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium mb-1">Data Upload (dd/MM/yyyy)</label>
+    <input asp-for="data_upload" class="w-full rounded-lg border px-3 py-2" placeholder="21/08/2025"/>
+    <span asp-validation-for="data_upload" class="text-red-600 text-xs"></span>
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium mb-1">Horário Início (HH:mm)</label>
+    <input asp-for="horario_inicio" class="w-full rounded-lg border px-3 py-2" placeholder="14:15"/>
+    <span asp-validation-for="horario_inicio" class="text-red-600 text-xs"></span>
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium mb-1">Usuário (Id)</label>
+    <input asp-for="id_usuario" type="number" class="w-full rounded-lg border px-3 py-2"/>
+    <span asp-validation-for="id_usuario" class="text-red-600 text-xs"></span>
+  </div>
+
+  <div>
+    <label class="block text-sm font-medium mb-1">Câmera (Id)</label>
+    <input asp-for="camera_id" type="number" class="w-full rounded-lg border px-3 py-2"/>
+    <span asp-validation-for="camera_id" class="text-red-600 text-xs"></span>
+  </div>
+
+  <div class="md:col-span-2 flex justify-end">
+    <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+      Salvar Vídeo
+    </button>
+  </div>
+</form>

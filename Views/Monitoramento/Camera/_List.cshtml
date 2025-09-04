@@ -1,0 +1,43 @@
+@using Models.Repositorio.Entidades
+@{
+    var camera = ViewBag.Camera as IEnumerable<Camera> ?? Enumerable.Empty<Camera>();
+}
+<div class="bg-white rounded-xl shadow">
+  <table class="min-w-full text-sm">
+    <thead class="bg-gray-50 text-gray-600">
+      <tr>
+        <th class="px-4 py-2 text-left">ID</th>
+        <th class="px-4 py-2 text-left">Descrição</th>
+        <th class="px-4 py-2 text-left">Lat</th>
+        <th class="px-4 py-2 text-left">Lon</th>
+        <th class="px-4 py-2 text-left">FPS</th>
+        <th class="px-4 py-2"></th>
+      </tr>
+    </thead>
+    <tbody>
+    @if (!camera.Any())
+    {
+      <tr><td colspan="6" class="px-4 py-6 text-center text-gray-500">Nenhuma câmera adicionada.</td></tr>
+    }
+    else
+    {
+      foreach (var c in camera)
+      {
+        <tr class="border-t">
+          <td class="px-4 py-2">@c.Id</td>
+          <td class="px-4 py-2">@c.Descricao</td>
+          <td class="px-4 py-2">@c.Latitude</td>
+          <td class="px-4 py-2">@c.Longitude</td>
+          <td class="px-4 py-2">@c.Fps</td>
+          <td class="px-4 py-2 text-right">
+            <form asp-controller="Camera" asp-action="Delete" method="post">
+              <input type="hidden" name="id" value="@c.Id" />
+              <button class="text-red-600 hover:underline">Excluir</button>
+            </form>
+          </td>
+        </tr>
+      }
+    }
+    </tbody>
+  </table>
+</div>

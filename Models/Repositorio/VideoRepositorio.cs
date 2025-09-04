@@ -1,6 +1,6 @@
 using System.Data;
 using Dapper;
-using Models.Repositorio.Entidades;
+using InfraEstrutura;
 
 namespace Models.Repositorio.Entidades
 {
@@ -16,8 +16,8 @@ namespace Models.Repositorio.Entidades
         public IEnumerable<Video> BuscarTodos()
         {
             const string sql = @"
-                SELECT Id, NomeArquivo, CaminhoArquivo, DataUpload, HorarioInicio, IdUsuario, CameraId
-                FROM Videos
+                SELECT Id, nome_arquivo, caminho_arquivo, data_upload, horario_inicio, id_usuario, camera_id
+                FROM Video
                 ORDER BY Id DESC;";
             return _dbConnection.Query<Video>(sql);
         }
@@ -30,8 +30,8 @@ namespace Models.Repositorio.Entidades
         public Video Buscar(int id)
         {
             const string sql = @"
-                    SELECT Id, NomeArquivo, CaminhoArquivo, DataUpload, HorarioInicio, IdUsuario, CameraId
-                    FROM Videos
+                    SELECT Id, nome_arquivo, caminho_arquivo, data_upload, horario_inicio, id_usuario, camera_id
+                    FROM Video
                     WHERE Id = @Id;";
             var result = _dbConnection.QuerySingleOrDefault<Video>(sql, new { Id = id });
 
@@ -43,18 +43,18 @@ namespace Models.Repositorio.Entidades
         public void Inserir(Video model)
         {
             const string sql = @"
-                    INSERT INTO Videos (NomeArquivo, CaminhoArquivo, DataUpload, HorarioInicio, IdUsuario, CameraId)
-                    VALUES (@NomeArquivo, @CaminhoArquivo, @DataUpload, @HorarioInicio, @IdUsuario, @CameraId);
+                    INSERT INTO Video (nome_arquivo, caminho_arquivo, data_upload, horario_inicio, id_usuario, camera_id)
+                    VALUES (@nome_arquivo, @caminho_arquivo, @data_upload, @horario_inicio, @id_usuario, @camera_id);
                     SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
             var newId = _dbConnection.ExecuteScalar<int>(sql, new
             {
-                model.NomeArquivo,
-                model.CaminhoArquivo,
-                model.DataUpload,    // string "dd/MM/yyyy" (validar no Controller/ViewModel)
-                model.HorarioInicio, // string "HH:mm" (validar no Controller/ViewModel)
-                model.IdUsuario,
-                model.CameraId
+                model.nome_arquivo,
+                model.caminho_arquivo,
+                model.data_upload,    // string "dd/MM/yyyy" (validar no Controller/ViewModel)
+                model.horario_inicio, // string "HH:mm" (validar no Controller/ViewModel)
+                model.id_usuario,
+                model.camera_id
             });
 
             model.Id = newId;
@@ -63,30 +63,30 @@ namespace Models.Repositorio.Entidades
         public void Alterar(Video model)
         {
             const string sql = @"
-                UPDATE Videos
-                SET NomeArquivo   = @NomeArquivo,
-                    CaminhoArquivo= @CaminhoArquivo,
-                    DataUpload    = @DataUpload,
-                    HorarioInicio = @HorarioInicio,
-                    IdUsuario     = @IdUsuario,
-                    CameraId      = @CameraId
+                UPDATE Video
+                SET nome_arquivo   = @nome_arquivo,
+                    caminho_arquivo= @caminho_arquivo,
+                    data_upload    = @data_upload,
+                    horario_inicio = @horario_inicio,
+                    id_usuario     = @id_usuario,
+                    camera_id      = @camera_id
                 WHERE Id = @Id;";
 
             _dbConnection.Execute(sql, new
             {
-                model.NomeArquivo,
-                model.CaminhoArquivo,
-                model.DataUpload,
-                model.HorarioInicio,
-                model.IdUsuario,
-                model.CameraId,
+                model.nome_arquivo,
+                model.caminho_arquivo,
+                model.data_upload,
+                model.horario_inicio,
+                model.id_usuario,
+                model.camera_id,
                 model.Id
             });
         }
 
         public void Excluir(int id)
         {
-            const string sql = "DELETE FROM Videos WHERE Id = @Id;";
+            const string sql = "DELETE FROM Video WHERE Id = @Id;";
             _dbConnection.Execute(sql, new { Id = id });
         }
     }

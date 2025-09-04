@@ -3,38 +3,38 @@ using Models.Repositorio.Entidades;
 
 namespace Models.ViewModel
 {
-    public class VideosViewModel : Video
+    public class VideoViewModel : Video
     {
         public override int Id { get; set; }
 
         [Required(ErrorMessage = "O nome do arquivo é obrigatório.")]
         [StringLength(200, ErrorMessage = "Máximo de 200 caracteres.")]
-        public override string NomeArquivo { get; set; } = string.Empty;
+        public override string nome_arquivo { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "O caminho/URL do arquivo é obrigatório.")]
         [StringLength(500, ErrorMessage = "Máximo de 500 caracteres.")]
-        public override string CaminhoArquivo { get; set; } = string.Empty;
+        public override string caminho_arquivo { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "A data de upload é obrigatória.")]
         [RegularExpression(@"^\d{2}/\d{2}/\d{4}$", ErrorMessage = "Use o formato dd/MM/yyyy (ex.: 21/08/2025).")]
-        public override string DataUpload { get; set; } = string.Empty;
+        public override string data_upload { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "O horário de início é obrigatório.")]
         [RegularExpression(@"^\d{2}:\d{2}$", ErrorMessage = "Use o formato HH:mm (ex.: 14:15).")]
-        public override string HorarioInicio { get; set; } = string.Empty;
+        public override string horario_inicio { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Usuário é obrigatório.")]
-        public override int IdUsuario { get; set; }
+        public override int id_usuario { get; set; }
 
         [Required(ErrorMessage = "A câmera vinculada é obrigatória.")]
-        public override int CameraId { get; set; }
+        public override int camera_id { get; set; }
 
-        public static VideosViewModel ViewModel(Video entidade)
+        public static VideoViewModel ViewModel(Video entidade)
         {
             if (entidade == null)
                 throw new ArgumentNullException(nameof(entidade));
 
-            Type tipoDestino = typeof(VideosViewModel);
+            Type tipoDestino = typeof(VideoViewModel);
             Type tipoOrigem = typeof(Video);
 
             var instancia = Activator.CreateInstance(tipoDestino);
@@ -50,7 +50,7 @@ namespace Models.ViewModel
                     }
                 }
             }
-            return (VideosViewModel)instancia!;
+            return (VideoViewModel)instancia!;
         }
     }
 }

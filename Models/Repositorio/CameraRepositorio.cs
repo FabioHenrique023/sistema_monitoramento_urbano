@@ -1,6 +1,6 @@
 using System.Data;
 using Dapper;
-using Models.Repositorio.Entidades;
+using InfraEstrutura;
 
 namespace Models.Repositorio.Entidades
 {

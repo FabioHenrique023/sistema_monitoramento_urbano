@@ -1,4 +1,5 @@
 namespace Models.Repositorio.Entidades;
+using System.Collections.Generic;
 
 public interface IRepositorio<TEntidade>
 {

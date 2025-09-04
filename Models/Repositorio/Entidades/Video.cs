@@ -8,35 +8,35 @@ namespace Models.Repositorio.Entidades
         public virtual int Id { get; set; }
 
         [Required, MaxLength(200)]
-        public virtual string NomeArquivo { get; set; }
+        public virtual string nome_arquivo { get; set; }
 
         [Required, MaxLength(500)]
-        public virtual string CaminhoArquivo { get; set; }
+        public virtual string caminho_arquivo { get; set; }
 
         [Required]
         [DataType(DataType.Date)]
-        public virtual string DataUpload { get; set; } // Ex: "21/08/2025"
+        public virtual string data_upload { get; set; } // Ex: "21/08/2025"
 
         [Required]
         [DataType(DataType.Time)]
-        public virtual string HorarioInicio { get; set; } // Ex: "14:15"
+        public virtual string horario_inicio { get; set; } // Ex: "14:15"
 
         [Required]
-        public virtual int IdUsuario { get; set; }
+        public virtual int id_usuario { get; set; }
 
         [Required]
-        public virtual int CameraId { get; set; }
+        public virtual int camera_id { get; set; }
 
         // Construtor para garantir que todos os campos obrigatórios sejam preenchidos
         [SetsRequiredMembers]
-        public Video(string nomeArquivo, string caminhoArquivo, string dataUpload, string horarioInicio, int idUsuario, int cameraId)
+        public Video(string nome_arquivo, string caminho_arquivo, string data_upload, string horario_inicio, int id_usuario, int camera_id)
         {
-            NomeArquivo    = nomeArquivo;
-            CaminhoArquivo = caminhoArquivo;
-            DataUpload     = dataUpload;
-            HorarioInicio  = horarioInicio;
-            IdUsuario      = idUsuario;
-            CameraId       = cameraId;
+            nome_arquivo    = nome_arquivo;
+            caminho_arquivo = caminho_arquivo;
+            data_upload     = data_upload;
+            horario_inicio  = horario_inicio;
+            id_usuario      = id_usuario;
+            camera_id       = camera_id;
         }
 
         // Necessário para o EF Core

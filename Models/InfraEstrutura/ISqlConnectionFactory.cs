@@ -1,6 +1,7 @@
-using Microsoft.Data.SqlClient;
+namespace InfraEstrutura;
+using System.Data;
 
-public interface ISqlConnectionFactory 
+public interface ISqlConnectionFactory
 {
-    SqlConnection CreateConnection();
+    IDbConnection CreateConnection();
 }
