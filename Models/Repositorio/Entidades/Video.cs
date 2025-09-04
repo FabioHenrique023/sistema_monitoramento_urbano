@@ -8,18 +8,18 @@ namespace Models.Repositorio.Entidades
         public virtual int Id { get; set; }
 
         [Required, MaxLength(200)]
-        public virtual required string NomeArquivo { get; set; }
+        public virtual string NomeArquivo { get; set; }
 
         [Required, MaxLength(500)]
-        public virtual required string CaminhoArquivo { get; set; }
+        public virtual string CaminhoArquivo { get; set; }
 
         [Required]
         [DataType(DataType.Date)]
-        public virtual required string DataUpload { get; set; } // Ex: "21/08/2025"
+        public virtual string DataUpload { get; set; } // Ex: "21/08/2025"
 
         [Required]
         [DataType(DataType.Time)]
-        public virtual required string HorarioInicio { get; set; } // Ex: "14:15"
+        public virtual string HorarioInicio { get; set; } // Ex: "14:15"
 
         [Required]
         public virtual int IdUsuario { get; set; }

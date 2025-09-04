@@ -5,19 +5,19 @@ namespace Models.Repositorio.Entidades
 {
     public class Camera
     {
-        public int Id { get; set; }
+        public virtual int Id { get; set; }
 
         [Required, MaxLength(200)]
-        public required string Descricao { get; set; }
+        public virtual string Descricao { get; set; }
 
         [Required, Range(-90, 90)]
-        public double Latitude { get; set; }
+        public virtual double Latitude { get; set; }
 
         [Required, Range(-180, 180)]
-        public double Longitude { get; set; }
+        public virtual double Longitude { get; set; }
 
         [Required, MaxLength(50)]
-        public required string Fps { get; set; }
+        public virtual string Fps { get; set; }
 
         // Construtor para garantir que todos os campos obrigatórios sejam preenchidos
         [SetsRequiredMembers]
