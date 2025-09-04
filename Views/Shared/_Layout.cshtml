@@ -1,51 +1,76 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - sistema_monitoramento_urbano</title>
-    <script type="importmap"></script>
+    <title>@ViewData["Title"] - Sistema de Monitoramento Urbano</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/sistema_monitoramento_urbano.styles.css" asp-append-version="true" />
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">sistema_monitoramento_urbano</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+
+    <!-- NAVBAR -->
+    <header class="bg-white shadow-sm border-b border-gray-100">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                
+                <!-- LOGO -->
+                <a asp-area="" asp-controller="Home" asp-action="Index" 
+                   class="text-lg font-bold text-indigo-700 hover:text-indigo-900">
+                    Sistema de Monitoramento Urbano
+                </a>
+
+                <!-- USUÁRIO -->
+                <div class="hidden md:flex items-center gap-3">
+                    <span class="text-sm text-gray-600">Bem-vindo, Prefeito</span>
+                    <button class="w-9 h-9 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-semibold">
+                        P
+                    </button>
+                </div>
+
+                <!-- MENU MOBILE -->
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-gray-600 hover:text-indigo-700 focus:outline-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
                 </div>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+        </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - sistema_monitoramento_urbano - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        <!-- MENU MOBILE DROPDOWN -->
+        <div id="mobile-menu" class="md:hidden hidden px-4 pb-4 space-y-2 border-t border-gray-100">
+            <a asp-controller="Home" asp-action="Index" class="block text-gray-600 hover:text-indigo-700">Dashboard</a>
+            <a asp-controller="Monitoramento" asp-action="Cameras" class="block text-gray-600 hover:text-indigo-700">Câmeras</a>
+            <a asp-controller="Monitoramento" asp-action="Videos" class="block text-gray-600 hover:text-indigo-700">Vídeos</a>
+            <a asp-controller="Relatorios" asp-action="Index" class="block text-gray-600 hover:text-indigo-700">Relatórios</a>
+        </div>
+    </header>
+
+    <!-- CONTEÚDO -->
+    <main role="main" class="flex-1 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+        @RenderBody()
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-gray-100 border-t border-gray-200">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row justify-between items-center text-sm text-gray-500">
+            <p>&copy; @DateTime.Now.Year - Sistema de Monitoramento Urbano. Todos os direitos reservados.</p>
+            <a asp-controller="Home" asp-action="Privacy" class="hover:text-indigo-600">Política de Privacidade</a>
         </div>
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <!-- SCRIPT MENU MOBILE -->
+    <script>
+        const btn = document.getElementById("mobile-menu-btn");
+        const menu = document.getElementById("mobile-menu");
+        btn.addEventListener("click", () => {
+            menu.classList.toggle("hidden");
+        });
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
