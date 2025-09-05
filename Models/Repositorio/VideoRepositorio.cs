@@ -4,7 +4,7 @@ using InfraEstrutura;
 
 namespace sistema_monitoramento_urbano.Models.Repositorio.Entidades
 {
-    public class VideoRepositorio : IRepositorio<Video>
+    public class VideoRepositorio : IVideoRepositorio
     {
         private readonly IDbConnection _dbConnection;
 

@@ -15,56 +15,52 @@ namespace sistema_monitoramento_urbano.Controllers
             _cameraRepositorio = cameraRepositorio;
         }
 
-        public IActionResult Index()
-        {
-            return RedirectToAction(nameof(Listar));
-        }
-
+        // Lista (retorna apenas a partial _List)
         public IActionResult Listar()
         {
             try
             {
                 var cameras = _cameraRepositorio.BuscarTodos();
                 var lista = cameras.Select(CameraViewModel.ViewModel).ToList();
-                return View(lista);
+
+                return PartialView("~/Views/Monitoramento/Camera/_List.cshtml", lista);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Erro ao listar câmeras");
                 TempData["Error"] = "Erro ao carregar a lista de câmeras.";
-                return View(new List<CameraViewModel>());
+                return PartialView("~/Views/Monitoramento/Camera/_List.cshtml", new List<CameraViewModel>());
             }
         }
 
+        // Form (retorna apenas a partial _Form)
         [HttpGet]
-        public IActionResult Cadastro()
+        public IActionResult Form(int? id)
         {
-            return View(new CameraViewModel());
-        }
+            if (id == null)
+                return PartialView("~/Views/Monitoramento/Camera/_Form.cshtml", new CameraViewModel());
 
-        [HttpGet]
-        public IActionResult Cadastro(int id)
-        {
             try
             {
-                var entidade = _cameraRepositorio.Buscar(id);
+                var entidade = _cameraRepositorio.Buscar(id.Value);
                 if (entidade == null)
                 {
                     TempData["Error"] = "Câmera não encontrada.";
-                    return RedirectToAction(nameof(Listar));
+                    return RedirectToAction("Listar");
                 }
 
                 var model = CameraViewModel.ViewModel(entidade);
-                return View(model);
+                return PartialView("~/Views/Monitoramento/Camera/_Form.cshtml", model);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Erro ao buscar câmera {Id}", id);
                 TempData["Error"] = "Erro ao carregar os dados da câmera.";
-                return RedirectToAction(nameof(Listar));
+                return RedirectToAction("Listar");
             }
         }
 
+        // Salvar
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Salvar(CameraViewModel model)
@@ -72,32 +68,33 @@ namespace sistema_monitoramento_urbano.Controllers
             if (!ModelState.IsValid)
             {
                 TempData["Error"] = "Verifique os campos obrigatórios.";
-                return View("Cadastro", model);
+                return PartialView("~/Views/Monitoramento/Camera/_Form.cshtml", model);
             }
 
             try
             {
                 if (model.Id == 0)
                 {
-                    _cameraRepositorio.Inserir(model); // model já é Camera
+                    _cameraRepositorio.Inserir(model);
                     TempData["Success"] = "Câmera cadastrada com sucesso!";
                 }
                 else
                 {
-                    _cameraRepositorio.Alterar(model); // model já é Camera
+                    _cameraRepositorio.Alterar(model);
                     TempData["Success"] = "Câmera atualizada com sucesso!";
                 }
 
-                return RedirectToAction(nameof(Listar));
+                return RedirectToAction("Listar");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Erro ao salvar câmera");
                 TempData["Error"] = "Erro ao salvar a câmera.";
-                return View("Cadastro", model);
+                return PartialView("~/Views/Monitoramento/Camera/_Form.cshtml", model);
             }
         }
 
+        // Excluir
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Excluir(int id)
@@ -113,7 +110,7 @@ namespace sistema_monitoramento_urbano.Controllers
                 TempData["Error"] = "Erro ao excluir a câmera.";
             }
 
-            return RedirectToAction(nameof(Listar));
+            return RedirectToAction("Listar");
         }
     }
 }

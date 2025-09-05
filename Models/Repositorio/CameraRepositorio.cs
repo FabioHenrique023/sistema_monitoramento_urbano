@@ -1,10 +1,11 @@
 using System.Data;
 using Dapper;
 using InfraEstrutura;
+using sistema_monitoramento_urbano.Models.Repositorio;
 
 namespace sistema_monitoramento_urbano.Models.Repositorio.Entidades
 {
-    public class CameraRepositorio : IRepositorio<Camera>
+    public class CameraRepositorio : ICameraRepositorio
     {
         private readonly IDbConnection _dbConnection;
 
@@ -39,8 +40,8 @@ namespace sistema_monitoramento_urbano.Models.Repositorio.Entidades
         {
             const string sql = @"
                 INSERT INTO Cameras (Descricao, Latitude, Longitude, Fps)
-                VALUES (@Descricao, @Latitude, @Longitude, @Fps);
-                SELECT CAST(SCOPE_IDENTITY() AS INT);";
+                VALUES (@Descricao, @Latitude, @Longitude, @Fps)
+                RETURNING Id;";  // PostgreSQL retorna o Id da linha inserida
 
             var newId = _dbConnection.ExecuteScalar<int>(sql, new
             {

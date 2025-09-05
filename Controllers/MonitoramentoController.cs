@@ -1,15 +1,15 @@
 using Microsoft.AspNetCore.Mvc;
-using sistema_monitoramento_urbano.Models.Repositorio.Entidades;
 using sistema_monitoramento_urbano.Models.Repositorio;
+using sistema_monitoramento_urbano.Models.Repositorio.Entidades;
 
-namespace sistema_monitoramento_urbano.Controllers;
-
+namespace sistema_monitoramento_urbano.Controllers
+{
     public class MonitoramentoController : Controller
     {
-        private readonly IRepositorio<Camera> _cameraRepo;
-        private readonly IRepositorio<Video> _videoRepo;
+        private readonly ICameraRepositorio _cameraRepo;
+        private readonly IVideoRepositorio _videoRepo;
 
-        public MonitoramentoController(IRepositorio<Camera> cameraRepo, IRepositorio<Video> videoRepo)
+        public MonitoramentoController(ICameraRepositorio cameraRepo, IVideoRepositorio videoRepo)
         {
             _cameraRepo = cameraRepo;
             _videoRepo  = videoRepo;
@@ -17,10 +17,10 @@ namespace sistema_monitoramento_urbano.Controllers;
 
         public IActionResult Index()
         {
-            // busca dados do repositório e envia para as partials
             ViewBag.Camera = _cameraRepo.BuscarTodos();
             ViewBag.Video  = _videoRepo.BuscarTodos();
 
             return View();
         }
     }
+}

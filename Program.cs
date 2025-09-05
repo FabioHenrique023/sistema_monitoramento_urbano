@@ -16,8 +16,8 @@ builder.Services.AddSingleton<ISqlConnectionFactory>(sp =>
 });
 
 // Repositórios
-builder.Services.AddScoped<IRepositorio<Camera>, CameraRepositorio>();
-builder.Services.AddScoped<IRepositorio<Video>,  VideoRepositorio>();
+builder.Services.AddScoped<ICameraRepositorio, CameraRepositorio>();
+builder.Services.AddScoped<IVideoRepositorio, VideoRepositorio>();
 
 var app = builder.Build();
 
