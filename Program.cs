@@ -1,6 +1,6 @@
 using InfraEstrutura;
-using Models.Repositorio.Entidades;
-
+using sistema_monitoramento_urbano.Models.Repositorio.Entidades;
+using sistema_monitoramento_urbano.Models.Repositorio;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();

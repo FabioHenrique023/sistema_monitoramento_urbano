@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Models.Repositorio.Entidades
+namespace sistema_monitoramento_urbano.Models.Repositorio.Entidades
 {
     public class Video
     {

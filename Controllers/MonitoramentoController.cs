@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Models.Repositorio.Entidades;
+using sistema_monitoramento_urbano.Models.Repositorio.Entidades;
+using sistema_monitoramento_urbano.Models.Repositorio;
 
 namespace sistema_monitoramento_urbano.Controllers;
 

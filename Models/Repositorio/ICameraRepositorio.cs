@@ -1,8 +1,8 @@
-using Models.Repositorio.Entidades;
+using sistema_monitoramento_urbano.Models.Repositorio.Entidades;
 
-namespace Models.Repositorio;
-
-public interface ICameraRepositorio: IRepositorio<Camera>
+namespace sistema_monitoramento_urbano.Models.Repositorio
 {
-
+    public interface ICameraRepositorio : IRepositorio<Camera>
+    {
+    }
 }

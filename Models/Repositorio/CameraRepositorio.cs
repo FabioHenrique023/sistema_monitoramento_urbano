@@ -2,7 +2,7 @@ using System.Data;
 using Dapper;
 using InfraEstrutura;
 
-namespace Models.Repositorio.Entidades
+namespace sistema_monitoramento_urbano.Models.Repositorio.Entidades
 {
     public class CameraRepositorio : IRepositorio<Camera>
     {

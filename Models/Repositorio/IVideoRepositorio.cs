@@ -1,8 +1,10 @@
-using Models.Repositorio.Entidades;
+using sistema_monitoramento_urbano.Models.Repositorio.Entidades;
 
-namespace Models.Repositorio;
-
-public interface IVideoRepositorio: IRepositorio<Video>
+namespace sistema_monitoramento_urbano.Models.Repositorio
 {
-    IEnumerable<Video> BuscarPorCamera(int idCamera);
+
+    public interface IVideoRepositorio : IRepositorio<Video>
+    {
+        IEnumerable<Video> BuscarPorCamera(int idCamera);
+    }
 }

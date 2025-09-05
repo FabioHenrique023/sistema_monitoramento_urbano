@@ -1,11 +1,14 @@
-namespace Models.Repositorio.Entidades;
+using sistema_monitoramento_urbano.Models.Repositorio.Entidades;
 using System.Collections.Generic;
 
-public interface IRepositorio<TEntidade>
+namespace sistema_monitoramento_urbano.Models.Repositorio
 {
-    IEnumerable<TEntidade> BuscarTodos();
-    void Inserir(TEntidade model);
-    void Alterar(TEntidade model);
-    void Excluir(int Id);
-    TEntidade Buscar(int Id);
+    public interface IRepositorio<TEntidade>
+    {
+        IEnumerable<TEntidade> BuscarTodos();
+        void Inserir(TEntidade model);
+        void Alterar(TEntidade model);
+        void Excluir(int Id);
+        TEntidade Buscar(int Id);
+    }
 }
