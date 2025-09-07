@@ -10,8 +10,8 @@ namespace sistema_monitoramento_urbano.Models.Repositorio.Entidades
         [Required, MaxLength(200)]
         public virtual string nome_arquivo { get; set; }
 
-        [Required, MaxLength(500)]
-        public virtual string caminho_arquivo { get; set; }
+        [MaxLength(500)]
+        public virtual string? caminho_arquivo { get; set; }
 
         [Required]
         [DataType(DataType.Date)]

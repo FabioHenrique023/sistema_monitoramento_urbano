@@ -11,12 +11,12 @@ namespace sistema_monitoramento_urbano.Models.ViewModel
         [StringLength(200, ErrorMessage = "Máximo de 200 caracteres.")]
         public override string nome_arquivo { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "O caminho/URL do arquivo é obrigatório.")]
-        [StringLength(500, ErrorMessage = "Máximo de 500 caracteres.")]
-        public override string caminho_arquivo { get; set; } = string.Empty;
+        // [Required(ErrorMessage = "O caminho/URL do arquivo é obrigatório.")]
+        // [StringLength(500, ErrorMessage = "Máximo de 500 caracteres.")]
+        public override string? caminho_arquivo { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "A data de upload é obrigatória.")]
-        [RegularExpression(@"^\d{2}/\d{2}/\d{4}$", ErrorMessage = "Use o formato dd/MM/yyyy (ex.: 21/08/2025).")]
+        // [RegularExpression(@"^\d{2}/\d{2}/\d{4}$", ErrorMessage = "Use o formato dd/MM/yyyy (ex.: 21/08/2025).")]
         public override string data_upload { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "O horário de início é obrigatório.")]

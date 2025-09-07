@@ -1,6 +1,7 @@
 using InfraEstrutura;
 using sistema_monitoramento_urbano.Models.Repositorio.Entidades;
 using sistema_monitoramento_urbano.Models.Repositorio;
+using sistema_monitoramento_urbano.Models.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
@@ -18,6 +19,9 @@ builder.Services.AddSingleton<ISqlConnectionFactory>(sp =>
 // Repositórios
 builder.Services.AddScoped<ICameraRepositorio, CameraRepositorio>();
 builder.Services.AddScoped<IVideoRepositorio, VideoRepositorio>();
+builder.Services.AddSingleton<GoogleDriveClient>();
+builder.Services.Configure<CloudinaryOptions>(builder.Configuration.GetSection("Cloudinary"));
+builder.Services.AddSingleton<ICloudinaryService, CloudinaryService>();
 
 var app = builder.Build();
 

@@ -1,16 +1,10 @@
 @model sistema_monitoramento_urbano.Models.ViewModel.VideoViewModel
 
 <div class="relative bg-white p-6 rounded-xl shadow-lg border border-gray-100">
-
-  <!-- Ícone de ajuda no canto superior direito 
-  <button type="button" onclick="openHelp('video')" 
-          class="absolute top-4 right-4 text-gray-400 hover:text-indigo-600">
-    <img src="/imagens/help_icon.png" alt="Ajuda" class="h-5 w-5 opacity-80 hover:opacity-100" />
-  </button>
-  -->
-  
-  <form asp-controller="Video" asp-action="Create" method="post"
+  <form asp-controller="Video" asp-action="Salvar" method="post" enctype="multipart/form-data"
         class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+    @Html.AntiForgeryToken()
 
     <!-- Nome do Arquivo -->
     <div>
@@ -23,15 +17,17 @@
       <span asp-validation-for="nome_arquivo" class="text-red-600 text-xs"></span>
     </div>
 
-    <!-- Caminho/URL -->
+    <!-- Upload do Vídeo -->
     <div>
       <label class="block text-sm font-semibold mb-1">
-        Caminho/URL <span class="text-red-600">*</span>
+        Vídeo (upload) <span class="text-red-600">*</span>
       </label>
-      <input asp-for="caminho_arquivo" placeholder="/videos/2025/08/arquivo.mp4 ou https://servidor/arquivo.mp4"
-             class="w-full rounded-lg border border-gray-300 px-3 py-2 
+      <input name="videoFile" type="file" accept="video/*"
+             class="w-full rounded-lg border border-gray-300 px-3 py-2 bg-white
+                    file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 
+                    file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100
                     focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"/>
-      <span asp-validation-for="caminho_arquivo" class="text-red-600 text-xs"></span>
+      <p class="text-xs text-gray-500 mt-1">Formatos comuns: .mp4, .webm, .mov, .avi, .mkv</p>
     </div>
 
     <!-- Data Upload -->
@@ -58,16 +54,16 @@
 
     <!-- Câmera -->
     <div class="md:col-span-2">
-      <label class="block text-sm font-semibold mb-1">
-        Câmera <span class="text-red-600">*</span>
-      </label>
-      <select asp-for="camera_id" asp-items="ViewBag.Cameras"
-              class="w-full rounded-lg border border-gray-300 px-3 py-2 bg-white 
-                     focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-        <option value="">Selecione uma câmera...</option>
-      </select>
-      <span asp-validation-for="camera_id" class="text-red-600 text-xs"></span>
-    </div>
+    <label class="block text-sm font-semibold mb-1">
+      Câmera <span class="text-red-600">*</span>
+    </label>
+    <select asp-for="camera_id" asp-items="@(ViewBag.Camera as SelectList)"
+            class="w-full rounded-lg border border-gray-300 px-3 py-2 bg-white 
+                  focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+      <option value="">Selecione uma câmera...</option>
+    </select>
+    <span asp-validation-for="camera_id" class="text-red-600 text-xs"></span>
+  </div>
 
     <!-- Botão -->
     <div class="md:col-span-2 flex justify-end">
@@ -79,34 +75,3 @@
     </div>
   </form>
 </div>
-
-<!-- Modal de Ajuda -->
-<div id="helpModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-  <div class="bg-white rounded-xl shadow-xl p-6 max-w-3xl w-full">
-    <h3 class="text-lg font-bold mb-4">Exemplo de preenchimento</h3>
-    <img id="helpImage" src="" alt="Exemplo" class="rounded-lg shadow-md max-h-[70vh] mx-auto"/>
-    <div class="mt-4 flex justify-end">
-      <button onclick="closeHelp()" 
-              class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">
-        Fechar
-      </button>
-    </div>
-  </div>
-</div>
-
-<script>
- function openHelp(type) {
-    const modal = document.getElementById('helpModal');
-    const img = document.getElementById('helpImage');
-
-    if (type === 'video') {
-      img.src = '/imagens/help_video.png';
-    }
-
-    modal.classList.remove('hidden');
-  }
-
-  function closeHelp() {
-    document.getElementById('helpModal').classList.add('hidden');
-  }
-</script>
