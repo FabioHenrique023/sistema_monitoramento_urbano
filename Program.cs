@@ -2,7 +2,29 @@ using InfraEstrutura;
 using sistema_monitoramento_urbano.Models.Repositorio.Entidades;
 using sistema_monitoramento_urbano.Models.Repositorio;
 using sistema_monitoramento_urbano.Models.Services;
+using Azure.Storage.Blobs;
+using Azure.Messaging.ServiceBus;
 var builder = WebApplication.CreateBuilder(args);
+var cfg = builder.Configuration;
+
+builder.Services.AddSingleton(sp =>
+{
+    var conn = cfg["Azure:Storage:ConnectionString"]
+               ?? Environment.GetEnvironmentVariable("AZURE_STORAGE_CONNECTION_STRING");
+    return new BlobServiceClient(conn);
+});
+builder.Services.AddSingleton(sp =>
+{
+    var conn = cfg["Azure:ServiceBus:ConnectionString"]
+               ?? Environment.GetEnvironmentVariable("AZURE_SERVICEBUS_CONNECTION_STRING");
+    return new ServiceBusClient(conn);
+});
+builder.Services.AddSingleton(sp =>
+{
+    var client = sp.GetRequiredService<ServiceBusClient>();
+    var queueName = cfg["Azure:ServiceBus:QueueProcessar"] ?? "processar";
+    return client.CreateSender(queueName);
+});
 
 builder.Services.AddControllersWithViews();
 
