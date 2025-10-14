@@ -21,14 +21,13 @@ builder.Services.AddSingleton(sp =>
 });
 builder.Services.AddSingleton(sp =>
 {
-    var client = sp.GetRequiredService<ServiceBusClient>();
-    var queueName = cfg["Azure:ServiceBus:QueueProcessar"] ?? "processar";
-    return client.CreateSender(queueName);
+    var conn = cfg["Azure:ServiceBus:ConnectionString"]
+               ?? Environment.GetEnvironmentVariable("AZURE_SERVICEBUS_CONNECTION_STRING");
+    return new ServiceBusClient(conn);
 });
 
 builder.Services.AddControllersWithViews();
 
-// Connection Factory (PostgreSQL)
 builder.Services.AddSingleton<ISqlConnectionFactory>(sp =>
 {
     var cs = sp.GetRequiredService<IConfiguration>()
@@ -38,7 +37,6 @@ builder.Services.AddSingleton<ISqlConnectionFactory>(sp =>
     return new NpgsqlConnectionFactory(cs);
 });
 
-// Repositórios
 builder.Services.AddScoped<ICameraRepositorio, CameraRepositorio>();
 builder.Services.AddScoped<IVideoRepositorio, VideoRepositorio>();
 builder.Services.AddSingleton<GoogleDriveClient>();

@@ -31,15 +31,14 @@ namespace sistema_monitoramento_urbano.Models.Repositorio.Entidades
         [SetsRequiredMembers]
         public Video(string nome_arquivo, string caminho_arquivo, string data_upload, string horario_inicio, int id_usuario, int camera_id)
         {
-            nome_arquivo    = nome_arquivo;
-            caminho_arquivo = caminho_arquivo;
-            data_upload     = data_upload;
-            horario_inicio  = horario_inicio;
-            id_usuario      = id_usuario;
-            camera_id       = camera_id;
+            this.nome_arquivo = nome_arquivo;
+            this.caminho_arquivo = caminho_arquivo;
+            this.data_upload = data_upload;
+            this.horario_inicio = horario_inicio;
+            this.id_usuario = id_usuario;
+            this.camera_id = camera_id;
         }
-
-        // Necessário para o EF Core
+        
         public Video() { }
     }
 }

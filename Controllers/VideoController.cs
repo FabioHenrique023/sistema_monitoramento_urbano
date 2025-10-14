@@ -22,8 +22,9 @@ namespace sistema_monitoramento_urbano.Controllers
         private readonly GoogleDriveClient _drive;
         private readonly ICloudinaryService _cloud;
         private readonly BlobServiceClient _blobServiceClient;
-        private readonly ServiceBusSender _queueSender;
         private readonly string _framesContainerName;
+        private readonly ServiceBusSender _senderProcessar;
+        private readonly ServiceBusSender _senderReId;
 
         public VideoController(
             ILogger<VideoController> logger,
@@ -32,8 +33,8 @@ namespace sistema_monitoramento_urbano.Controllers
             GoogleDriveClient drive,
             ICloudinaryService cloud,
             BlobServiceClient blobServiceClient,
-            ServiceBusSender queueSender,
-            IConfiguration config)
+            IConfiguration config,
+            ServiceBusClient sbClient)
         {
             _logger = logger;
             _videoRepositorio = videoRepositorio;
@@ -41,11 +42,14 @@ namespace sistema_monitoramento_urbano.Controllers
             _drive = drive;
             _cloud = cloud;
             _blobServiceClient = blobServiceClient;
-            _queueSender = queueSender;
             _framesContainerName = config["Azure:Storage:ContainerFrames"] ?? "frames";
+            var qProcessar   = config["Azure:ServiceBus:QueueProcessar"] ?? "processar";
+            var qProcessarRe = config["Azure:ServiceBus:QueueProcessarReId"] ?? "processar-reid";
+
+            _senderProcessar = sbClient.CreateSender(qProcessar);
+            _senderReId      = sbClient.CreateSender(qProcessarRe);
         }
 
-        // LISTAR (partial)
         public IActionResult Listar()
         {
             try
@@ -62,7 +66,6 @@ namespace sistema_monitoramento_urbano.Controllers
             }
         }
 
-        // FORM (partial)
         [HttpGet]
         public IActionResult Form(int? id)
         {
@@ -91,9 +94,21 @@ namespace sistema_monitoramento_urbano.Controllers
             return PartialView("~/Views/Monitoramento/Video/_Form.cshtml", model);
         }
 
+        private static string? GetContentType(string fileName)
+        {
+            var provider = new FileExtensionContentTypeProvider();
+            return provider.TryGetContentType(fileName, out var ct) ? ct : "application/octet-stream";
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Salvar(IFormFile? videoFile, int? camera_id, CancellationToken ct)
+        public async Task<IActionResult> Salvar(
+            IFormFile? videoFile,
+            string? nome_arquivo,
+            int? camera_id,
+            string? horario_inicio,
+            string? data_upload,
+            CancellationToken ct)
         {
             if (videoFile is null || videoFile.Length == 0)
             {
@@ -101,61 +116,76 @@ namespace sistema_monitoramento_urbano.Controllers
                 return RedirectToAction("Index", "Monitoramento", new { tab = "video" });
             }
 
-            // 1) Salvar temporariamente o vídeo
             var tempPath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}_{videoFile.FileName}");
-            await using (var stream = System.IO.File.Create(tempPath))
-                await videoFile.CopyToAsync(stream, ct);
+            await using (var fs = System.IO.File.Create(tempPath))
+                await videoFile.CopyToAsync(fs, ct);
+
+            string? videoBlobUrl = null;
+            string? videoBlobPath = null;
 
             try
             {
-                // 2) Extrair frames (ex.: 1 frame/segundo)
+                var videosContainer = _blobServiceClient.GetBlobContainerClient(_framesContainerName);
+                await videosContainer.CreateIfNotExistsAsync(PublicAccessType.None, cancellationToken: ct);
+
+                var cameraKey = camera_id?.ToString() ?? "sem-camera";
+                var videoKey  = Path.GetFileNameWithoutExtension(videoFile.FileName);
+                var ts        = DateTimeOffset.UtcNow.ToString("yyyyMMdd_HHmmss");
+                var safeName  = string.IsNullOrWhiteSpace(nome_arquivo) ? videoFile.FileName : nome_arquivo.Trim();
+                var fileName  = Path.GetFileNameWithoutExtension(safeName);
+                var ext       = Path.GetExtension(videoFile.FileName);
+                videoBlobPath = $"cameras/videos/{cameraKey}/{videoKey}/{ts}_{fileName}{ext}";
+
+                var blob = videosContainer.GetBlobClient(videoBlobPath);
+
+                await using (var read = System.IO.File.OpenRead(tempPath))
+                {
+                    var headers = new BlobHttpHeaders { ContentType = GetContentType(videoFile.FileName) };
+                    var metadata = new Dictionary<string, string>
+                    {
+                        ["camera_id"] = camera_id?.ToString() ?? "",
+                        ["original_name"] = videoFile.FileName,
+                        ["uploaded_at_utc"] = DateTimeOffset.UtcNow.ToString("o")
+                    };
+
+                    await blob.UploadAsync(
+                        read,
+                        new BlobUploadOptions { HttpHeaders = headers, Metadata = metadata },
+                        ct
+                    );
+                }
+
+                videoBlobUrl = blob.Uri.ToString();
+
                 var framesOutputDir = Path.Combine(Path.GetTempPath(), $"frames_{Path.GetFileNameWithoutExtension(tempPath)}");
                 Directory.CreateDirectory(framesOutputDir);
 
                 var frameFiles = VideoProcessor.ExtractFrames(tempPath, framesOutputDir, frameRate: 1);
 
-                // 3) Garantir container de frames
-                var container = _blobServiceClient.GetBlobContainerClient(_framesContainerName);
-                await container.CreateIfNotExistsAsync(PublicAccessType.None, cancellationToken: ct);
-
-                // 4) Upload de cada frame + publicar mensagem na fila
-                var uploaded = 0;
-                var videoKey = Path.GetFileNameWithoutExtension(videoFile.FileName);
-                var cameraKey = camera_id?.ToString() ?? "sem-camera";
+                var framesContainer = _blobServiceClient.GetBlobContainerClient(_framesContainerName);
+                await framesContainer.CreateIfNotExistsAsync(PublicAccessType.None, cancellationToken: ct);
 
                 foreach (var framePath in frameFiles)
                 {
                     ct.ThrowIfCancellationRequested();
 
-                    var frameName = Path.GetFileName(framePath);
-                    // Caminho lógico no container (ajuste como preferir)
-                    var blobPath = $"cameras/{cameraKey}/{videoKey}/{frameName}";
-                    var blobClient = container.GetBlobClient(blobPath);
+                    var frameName  = Path.GetFileName(framePath);
+                    var frameBlobPath = $"cameras/frames/{cameraKey}/{videoKey}/{frameName}";
+                    var frameBlob  = framesContainer.GetBlobClient(frameBlobPath);
 
-                    // await using (var fs = System.IO.File.OpenRead(framePath))
-                    // {
-                    //     var headers = new BlobHttpHeaders { ContentType = "image/jpeg" };
-                    //     await blobClient.UploadAsync(fs, new BlobUploadOptions { HttpHeaders = headers }, ct);
-                    // }
-
-                    // Monta mensagem p/ fila
-                    // var msg = new ProcessarFrameMessage(
-                    //     BlobUrl: blobClient.Uri.ToString(),
-                    //     BlobPath: blobPath,
-                    //     Container: _framesContainerName,
-                    //     CameraId: camera_id?.ToString(),
-                    //     VideoFileName: videoFile.FileName,
-                    //     FrameFileName: frameName,
-                    //     CapturedAtUtc: DateTimeOffset.UtcNow
-                    // );
+                    await using (var fr = System.IO.File.OpenRead(framePath))
+                    {
+                        var headers = new BlobHttpHeaders { ContentType = "image/jpeg" };
+                        await frameBlob.UploadAsync(fr, new BlobUploadOptions { HttpHeaders = headers }, ct);
+                    }
 
                     var msg = new ProcessarFrameMessage(
-                        BlobUrl: "teste",
-                        BlobPath: "teste",
-                        Container: "teste",
+                        BlobUrl: frameBlob.Uri.ToString(),
+                        BlobPath: frameBlobPath,
+                        Container: _framesContainerName,
                         CameraId: camera_id?.ToString(),
                         VideoFileName: videoFile.FileName,
-                        FrameFileName: "teste",
+                        FrameFileName: frameName,
                         CapturedAtUtc: DateTimeOffset.UtcNow
                     );
 
@@ -166,27 +196,34 @@ namespace sistema_monitoramento_urbano.Controllers
                         Subject = "frame.uploaded"
                     };
 
-                    await _queueSender.SendMessageAsync(sbMsg, ct);
-                    uploaded++;
+                    await _senderProcessar.SendMessageAsync(sbMsg, ct);
+                    await _senderReId.SendMessageAsync(sbMsg, ct);
                 }
 
-                TempData["Success"] = $"Extraí {frameFiles.Count} frames, subi no Blob Storage e publiquei {frameFiles.Count} mensagens na fila 'processar'.";
+                TempData["Success"] = $"Upload do vídeo concluído e {frameFiles.Count} frames processados.";
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Falha ao processar vídeo {Arquivo}", videoFile.FileName);
-                TempData["Error"] = "Falha ao processar e enviar os frames para a fila.";
+                _logger.LogError(ex, "Falha ao subir vídeo/frames {Arquivo}", videoFile.FileName);
+                TempData["Error"] = "Falha ao subir o vídeo e/ou processar frames.";
             }
             finally
             {
-                // limpeza
                 try { System.IO.File.Delete(tempPath); } catch { /* ignore */ }
             }
+
+            Video video = new Video(
+                Path.GetFileName(videoBlobPath),
+                videoBlobUrl,
+                (data_upload ?? DateTime.Now.ToString("dd/MM/yyyy")),
+                string.IsNullOrWhiteSpace(horario_inicio) ? null : horario_inicio[..5],
+                67,
+                camera_id ?? 0);
+            _videoRepositorio.Inserir(video);
 
             return RedirectToAction("Index", "Monitoramento", new { tab = "video" });
         }
 
-        // EXCLUIR
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Excluir(int id)
@@ -205,7 +242,6 @@ namespace sistema_monitoramento_urbano.Controllers
             return RedirectToAction("Listar");
         }
 
-        // helper do combo
         private void PopulateCamerasSelectList(int? selectedId = null)
         {
             var cameras = _cameraRepositorio.BuscarTodos() ?? Enumerable.Empty<Camera>();
