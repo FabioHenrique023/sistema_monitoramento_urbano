@@ -18,7 +18,7 @@ namespace sistema_monitoramento_urbano.Models.Repositorio.Entidades
         {
             const string sql = @"
                 SELECT Id, Descricao, Latitude, Longitude, Fps
-                FROM Cameras
+                FROM cameras
                 ORDER BY Id DESC;";
             return _dbConnection.Query<Camera>(sql);
         }
@@ -27,7 +27,7 @@ namespace sistema_monitoramento_urbano.Models.Repositorio.Entidades
         {
             const string sql = @"
                 SELECT Id, Descricao, Latitude, Longitude, Fps
-                FROM Cameras
+                FROM public.cameras
                 WHERE Id = @Id;";
             var result = _dbConnection.QuerySingleOrDefault<Camera>(sql, new { Id = id });
 
@@ -36,10 +36,10 @@ namespace sistema_monitoramento_urbano.Models.Repositorio.Entidades
             return result;
         }
 
-        public void Inserir(Camera model)
+        public int Inserir(Camera model)
         {
             const string sql = @"
-                INSERT INTO Cameras (Descricao, Latitude, Longitude, Fps)
+                INSERT INTO cameras (Descricao, Latitude, Longitude, Fps)
                 VALUES (@Descricao, @Latitude, @Longitude, @Fps)
                 RETURNING Id;";  // PostgreSQL retorna o Id da linha inserida
 
@@ -52,12 +52,13 @@ namespace sistema_monitoramento_urbano.Models.Repositorio.Entidades
             });
 
             model.Id = newId;
+            return newId;
         }
 
         public void Alterar(Camera model)
         {
             const string sql = @"
-                UPDATE Cameras
+                UPDATE cameras
                 SET Descricao = @Descricao,
                     Latitude  = @Latitude,
                     Longitude = @Longitude,
@@ -76,7 +77,7 @@ namespace sistema_monitoramento_urbano.Models.Repositorio.Entidades
 
         public void Excluir(int id)
         {
-            const string sql = "DELETE FROM Cameras WHERE Id = @Id;";
+            const string sql = "DELETE FROM cameras WHERE Id = @Id;";
             _dbConnection.Execute(sql, new { Id = id });
         }
     }

@@ -1,7 +1,7 @@
 @using sistema_monitoramento_urbano.Models.Repositorio.Entidades
 @{
     var video = ViewBag.Video as IEnumerable<Video> ?? Enumerable.Empty<Video>();
-    var cameras = ViewBag.Cameras as IEnumerable<SelectListItem> ?? Enumerable.Empty<SelectListItem>();
+    var cameras = ViewBag.Camera as IEnumerable<SelectListItem> ?? Enumerable.Empty<SelectListItem>();
 }
 
 <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
@@ -13,7 +13,6 @@
         <th class="px-4 py-3 text-left">Caminho</th>
         <th class="px-4 py-3 text-left">Data</th>
         <th class="px-4 py-3 text-left">Início</th>
-        <th class="px-4 py-3 text-left">Usuário</th>
         <th class="px-4 py-3 text-left">Câmera</th>
         <th class="px-4 py-3 text-right">Ações</th>
       </tr>
@@ -35,9 +34,9 @@
         <tr class="hover:bg-gray-50">
           <td class="px-4 py-3 font-medium text-gray-900">@v.Id</td>
           <td class="px-4 py-3">@v.nome_arquivo</td>
+          <td class="px-4 py-3">@v.caminho_arquivo</td>
           <td class="px-4 py-3">@v.data_upload</td>
           <td class="px-4 py-3">@v.horario_inicio</td>
-          <td class="px-4 py-3">@v.id_usuario</td>
           <td class="px-4 py-3">@cameraNome</td>
           <td class="px-4 py-3 text-right">
             <form asp-controller="Video" asp-action="Delete" method="post" class="inline">

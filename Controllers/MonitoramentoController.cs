@@ -10,11 +10,16 @@ namespace sistema_monitoramento_urbano.Controllers
     {
         private readonly ICameraRepositorio _cameraRepo;
         private readonly IVideoRepositorio _videoRepo;
+        private readonly IFrameProcessadoRepositorio _frameRepo;
 
-        public MonitoramentoController(ICameraRepositorio cameraRepo, IVideoRepositorio videoRepo)
+        public MonitoramentoController(
+            ICameraRepositorio cameraRepo,
+            IVideoRepositorio videoRepo,
+            IFrameProcessadoRepositorio frameRepo)
         {
             _cameraRepo = cameraRepo;
-            _videoRepo  = videoRepo;
+            _videoRepo = videoRepo;
+            _frameRepo  = frameRepo;
         }
         
         [HttpPost]
@@ -53,6 +58,7 @@ namespace sistema_monitoramento_urbano.Controllers
             );
             ViewBag.Cameras = _cameraRepo.BuscarTodos();
             ViewBag.Video = _videoRepo.BuscarTodos();
+            ViewBag.FramesProcessados = _frameRepo.BuscarTodos();
 
             return View();
         }

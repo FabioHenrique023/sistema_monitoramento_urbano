@@ -7,5 +7,6 @@ public record ProcessarFrameMessage(
     string? CameraId,
     string VideoFileName,
     string FrameFileName,
-    DateTimeOffset CapturedAtUtc
+    DateTimeOffset CapturedAtUtc,
+    int? VideoId
 );

@@ -6,7 +6,7 @@ namespace sistema_monitoramento_urbano.Models.Repositorio
     public interface IRepositorio<TEntidade>
     {
         IEnumerable<TEntidade> BuscarTodos();
-        void Inserir(TEntidade model);
+        public int Inserir(TEntidade model);
         void Alterar(TEntidade model);
         void Excluir(int Id);
         TEntidade Buscar(int Id);

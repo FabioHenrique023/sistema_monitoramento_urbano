@@ -157,6 +157,15 @@ namespace sistema_monitoramento_urbano.Controllers
 
                 videoBlobUrl = blob.Uri.ToString();
 
+                Video video = new Video(
+                Path.GetFileName(videoBlobPath),
+                videoBlobUrl,
+                (data_upload ?? DateTime.Now.ToString("dd/MM/yyyy")),
+                string.IsNullOrWhiteSpace(horario_inicio) ? null : horario_inicio[..5],
+                67,
+                camera_id ?? 0);
+                var idVideo = _videoRepositorio.Inserir(video);
+
                 var framesOutputDir = Path.Combine(Path.GetTempPath(), $"frames_{Path.GetFileNameWithoutExtension(tempPath)}");
                 Directory.CreateDirectory(framesOutputDir);
 
@@ -186,7 +195,8 @@ namespace sistema_monitoramento_urbano.Controllers
                         CameraId: camera_id?.ToString(),
                         VideoFileName: videoFile.FileName,
                         FrameFileName: frameName,
-                        CapturedAtUtc: DateTimeOffset.UtcNow
+                        CapturedAtUtc: DateTimeOffset.UtcNow,
+                        VideoId: idVideo
                     );
 
                     var body = JsonSerializer.Serialize(msg);
@@ -211,15 +221,6 @@ namespace sistema_monitoramento_urbano.Controllers
             {
                 try { System.IO.File.Delete(tempPath); } catch { /* ignore */ }
             }
-
-            Video video = new Video(
-                Path.GetFileName(videoBlobPath),
-                videoBlobUrl,
-                (data_upload ?? DateTime.Now.ToString("dd/MM/yyyy")),
-                string.IsNullOrWhiteSpace(horario_inicio) ? null : horario_inicio[..5],
-                67,
-                camera_id ?? 0);
-            _videoRepositorio.Inserir(video);
 
             return RedirectToAction("Index", "Monitoramento", new { tab = "video" });
         }

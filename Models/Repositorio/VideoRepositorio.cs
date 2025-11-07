@@ -45,7 +45,7 @@ namespace sistema_monitoramento_urbano.Models.Repositorio.Entidades
             return result;
         }
 
-        public void Inserir(Video model)
+        public int Inserir(Video model)
         {
             const string sql = @"
                 INSERT INTO public.video
@@ -65,6 +65,8 @@ namespace sistema_monitoramento_urbano.Models.Repositorio.Entidades
             });
 
             model.Id = newId;
+
+            return newId;
         }
 
         public void Alterar(Video model)

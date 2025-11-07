@@ -39,6 +39,7 @@ builder.Services.AddSingleton<ISqlConnectionFactory>(sp =>
 
 builder.Services.AddScoped<ICameraRepositorio, CameraRepositorio>();
 builder.Services.AddScoped<IVideoRepositorio, VideoRepositorio>();
+builder.Services.AddScoped<IFrameProcessadoRepositorio, FrameProcessadoRepositorio>();
 builder.Services.AddSingleton<GoogleDriveClient>();
 builder.Services.Configure<CloudinaryOptions>(builder.Configuration.GetSection("Cloudinary"));
 builder.Services.AddSingleton<ICloudinaryService, CloudinaryService>();

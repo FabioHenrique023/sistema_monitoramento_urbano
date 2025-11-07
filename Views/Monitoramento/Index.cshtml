@@ -36,6 +36,16 @@
           role="tab" aria-selected="false" aria-controls="tab-video" id="tabbtn-video">
           Vídeos
         </button>
+        <!-- Aba FrameProcessados -->
+        <button
+          type="button"
+          class="tab-btn inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition 
+                 text-slate-600 hover:text-slate-900"
+          data-target="#tab-frame"
+          data-color="emerald"
+          role="tab" aria-selected="false" aria-controls="tab-frame" id="tabbtn-frame">
+          Frames Processados
+        </button>
       </div>
     </div>
 
@@ -47,6 +57,9 @@
 
       <section id="tab-video" class="tab-panel mt-6 hidden" role="tabpanel" aria-labelledby="tabbtn-video">
         @await Html.PartialAsync("~/Views/Monitoramento/Video/_Tab.cshtml")
+      </section>
+       <section id="tab-frame" class="tab-panel mt-6 hidden" role="tabpanel" aria-labelledby="tabbtn-frame">
+        @await Html.PartialAsync("~/Views/Monitoramento/FrameProcessado/_Tab.cshtml")
       </section>
     </div>
   </div>

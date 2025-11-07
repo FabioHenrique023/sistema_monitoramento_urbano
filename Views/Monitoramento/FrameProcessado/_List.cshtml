@@ -1,0 +1,39 @@
+@using sistema_monitoramento_urbano.Models.Repositorio.Entidades
+@{
+    var frames = ViewBag.FramesProcessados as IEnumerable<FrameProcessado> ?? Enumerable.Empty<FrameProcessado>();
+}
+<div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+  <table class="min-w-full text-sm">
+    <thead class="bg-gray-50 text-gray-700 font-semibold">
+      <tr>
+        <th class="px-4 py-3 text-left">Id</th>
+        <th class="px-4 py-3 text-left">Caminho da Imagem</th>
+        <th class="px-4 py-3 text-left">Criado em</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+    @if (frames == null || !frames.Any())
+    {
+      <tr>
+        <td colspan="4" class="px-4 py-6 text-center text-gray-500">Nenhum frame processado.</td>
+      </tr>
+    }
+    else
+    {
+      foreach (dynamic f in frames)
+      {
+        <tr class="hover:bg-gray-50">
+          <td class="px-4 py-3 font-medium text-gray-900">@f.id</td>
+          <td class="px-4 py-3">
+            @if (!string.IsNullOrWhiteSpace(f.caminho_imagem))
+            {
+              <a href="@f.caminho_imagem?sp=r&amp;st=2025-11-03T11:42:13Z&amp;se=2026-03-14T19:57:13Z&amp;spr=https&amp;sv=2024-11-04&amp;sr=c&amp;sig=M%2FEppzitlKlHCnBpX1kHSu%2FPovfzo848F%2BHojLCCulM%3D" target="_blank" class="text-indigo-700 hover:underline">@f.caminho_imagem</a>
+            }
+          </td>
+          <td class="px-4 py-3">@f.created_at.ToString("dd/MM/yyyy HH:mm")</td>
+        </tr>
+      }
+    }
+    </tbody>
+  </table>
+</div>
