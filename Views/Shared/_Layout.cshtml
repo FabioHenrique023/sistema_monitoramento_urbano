@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment HostEnvironment
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="utf-8" />
@@ -13,6 +14,53 @@
 </head>
 <body class="bg-gray-50 flex flex-col min-h-screen">
 
+@{
+    var userName = (!HostEnvironment.IsDevelopment() && User?.Identity?.IsAuthenticated == true)
+        ? User.Identity?.Name?.Trim()
+        : null;
+
+    var displayName = string.IsNullOrWhiteSpace(userName) ? "Usuário" : userName!;
+
+    string initials;
+    if (!string.IsNullOrWhiteSpace(userName))
+    {
+        var processedName = userName!;
+        var atIndex = processedName.IndexOf('@');
+        if (atIndex > 0)
+        {
+            processedName = processedName[..atIndex];
+        }
+
+        var parts = processedName.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        if (processedName.Length == 0)
+        {
+            initials = "P";
+        }
+        else if (parts.Length == 0)
+        {
+            initials = char.ToUpperInvariant(processedName[0]).ToString();
+        }
+        else
+        {
+            var builder = new System.Text.StringBuilder(parts.Length);
+            for (var i = 0; i < parts.Length && i < 2; i++)
+            {
+                var part = parts[i];
+                if (!string.IsNullOrEmpty(part))
+                {
+                    builder.Append(char.ToUpperInvariant(part[0]));
+                }
+            }
+            initials = builder.Length > 0 ? builder.ToString() : "P";
+        }
+        displayName = processedName;
+    }
+    else
+    {
+        initials = "P";
+    }
+}
+
     <!-- NAVBAR -->
     <header class="bg-white shadow-sm border-b border-gray-100">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -26,10 +74,7 @@
 
                 <!-- USUÁRIO -->
                 <div class="hidden md:flex items-center gap-3">
-                    <span class="text-sm text-gray-600">Bem-vindo, Prefeito</span>
-                    <button class="w-9 h-9 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-semibold">
-                        P
-                    </button>
+                    <span class="text-sm text-gray-600">Bem-vindo, @displayName</span>
                 </div>
 
                 <!-- MENU MOBILE -->

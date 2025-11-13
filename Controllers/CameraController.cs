@@ -84,7 +84,7 @@ namespace sistema_monitoramento_urbano.Controllers
                     TempData["Success"] = "Câmera atualizada com sucesso!";
                 }
 
-                return RedirectToAction("Listar");
+                return RedirectToAction("Index", "Monitoramento", new { tab = "camera" });
             }
             catch (Exception ex)
             {
