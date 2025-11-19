@@ -3,6 +3,9 @@ using sistema_monitoramento_urbano.Models.Repositorio;
 using sistema_monitoramento_urbano.Models.Repositorio.Entidades;
 using sistema_monitoramento_urbano.Models.ViewModel;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace sistema_monitoramento_urbano.Controllers
 {
@@ -43,22 +46,77 @@ namespace sistema_monitoramento_urbano.Controllers
             return RedirectToAction("Index", "Monitoramento", new { tab = "video" });
         }
 
-        public IActionResult Index()
+        public IActionResult Index(
+            string? tab,
+            string? cameraBusca,
+            string? videoBusca,
+            int? videoCameraId,
+            string? framePlaca,
+            int? frameVideoId)
         {
-            IEnumerable<Camera> cameras = _cameraRepo.BuscarTodos();
-            ViewBag.Camera = new SelectList(
-                cameras.Select(p => new SelectListItem
+            var cameras = _cameraRepo.BuscarTodos().ToList();
+            var videos = _videoRepo.BuscarTodos().ToList();
+            var frames = _frameRepo.BuscarTodos().ToList();
+
+            var filteredCameras = string.IsNullOrWhiteSpace(cameraBusca)
+                ? cameras
+                : cameras
+                    .Where(c => !string.IsNullOrWhiteSpace(c.Descricao) &&
+                                c.Descricao.Contains(cameraBusca, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+
+            var filteredVideos = videos.AsEnumerable();
+            if (!string.IsNullOrWhiteSpace(videoBusca))
+            {
+                filteredVideos = filteredVideos.Where(v =>
+                    (!string.IsNullOrWhiteSpace(v.nome_arquivo) &&
+                     v.nome_arquivo.Contains(videoBusca, StringComparison.OrdinalIgnoreCase)) ||
+                    (!string.IsNullOrWhiteSpace(v.caminho_arquivo) &&
+                     v.caminho_arquivo.Contains(videoBusca, StringComparison.OrdinalIgnoreCase)));
+            }
+            if (videoCameraId.HasValue)
+            {
+                filteredVideos = filteredVideos.Where(v => v.camera_id == videoCameraId.Value);
+            }
+            var videosResult = filteredVideos.ToList();
+
+            var filteredFrames = frames.AsEnumerable();
+            if (!string.IsNullOrWhiteSpace(framePlaca))
+            {
+                filteredFrames = filteredFrames.Where(f =>
+                    !string.IsNullOrWhiteSpace(f.placa_detectada) &&
+                    f.placa_detectada.Contains(framePlaca, StringComparison.OrdinalIgnoreCase));
+            }
+            if (frameVideoId.HasValue)
+            {
+                filteredFrames = filteredFrames.Where(f => f.videos_id == frameVideoId.Value);
+            }
+            var framesResult = filteredFrames.ToList();
+
+            var cameraSelectItems = cameras
+                .Select(p => new SelectListItem
                 {
                     Value = p.Id.ToString(),
-                    Text = p.Descricao
+                    Text = p.Descricao ?? $"Câmera {p.Id}"
+                })
+                .ToList();
 
-                }).ToList()
-                , "Value"
-                , "Text"
-            );
-            ViewBag.Cameras = _cameraRepo.BuscarTodos();
-            ViewBag.Video = _videoRepo.BuscarTodos();
-            ViewBag.FramesProcessados = _frameRepo.BuscarTodos();
+            ViewBag.ActiveTab = string.IsNullOrWhiteSpace(tab) ? "camera" : tab;
+            ViewBag.CameraFiltro = cameraBusca;
+
+            ViewBag.VideoBusca = videoBusca;
+            ViewBag.VideoCameraFiltro = videoCameraId;
+
+            ViewBag.FramePlaca = framePlaca;
+            ViewBag.FrameVideoId = frameVideoId;
+
+            ViewBag.Camera = new SelectList(cameraSelectItems, "Value", "Text", videoCameraId);
+            ViewBag.CameraOptions = cameraSelectItems;
+            ViewBag.VideoOptions = new SelectList(videos, nameof(Video.Id), nameof(Video.nome_arquivo), frameVideoId);
+
+            ViewBag.Cameras = filteredCameras;
+            ViewBag.Video = videosResult;
+            ViewBag.FramesProcessados = framesResult;
 
             return View();
         }

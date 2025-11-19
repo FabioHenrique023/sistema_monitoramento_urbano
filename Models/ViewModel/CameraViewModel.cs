@@ -23,6 +23,8 @@ namespace sistema_monitoramento_urbano.Models.ViewModel
         [StringLength(50, ErrorMessage = "Máximo de 50 caracteres.")]
         public override string Fps { get; set; } = string.Empty;
 
+        public override bool BoAtivo { get; set; } = true;
+
         public static CameraViewModel ViewModel(Camera entidade)
         {
             if (entidade == null)

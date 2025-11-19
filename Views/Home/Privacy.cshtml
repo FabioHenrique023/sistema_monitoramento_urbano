@@ -1,6 +1,114 @@
 ﻿@{
-    ViewData["Title"] = "Privacy Policy";
+    ViewData["Title"] = "Política de Privacidade";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="mx-auto max-w-4xl space-y-10">
+    <header class="space-y-2">
+        <h1 class="text-3xl font-extrabold text-slate-900">@ViewData["Title"]</h1>
+        <p class="text-sm text-slate-500">
+            Última atualização: @DateTime.UtcNow.ToString("dd 'de' MMMM 'de' yyyy")
+        </p>
+        <p class="text-slate-600">
+            Esta Política de Privacidade descreve como coletamos, utilizamos, armazenamos e protegemos os dados pessoais
+            tratados pelo Sistema de Monitoramento Urbano (“Sistema”). Ela se aplica a todos os usuários, operadores e
+            visitantes autorizados.
+        </p>
+    </header>
+
+    <section class="space-y-3">
+        <h2 class="text-xl font-semibold text-slate-800">1. Informações que Coletamos</h2>
+        <div class="space-y-2 text-slate-600">
+            <p>Podemos coletar as seguintes categorias de dados, conforme sua interação com o Sistema:</p>
+            <ul class="list-disc list-inside space-y-1">
+                <li><strong>Dados de Identificação:</strong> nome, endereço de e-mail corporativo e credenciais de acesso.</li>
+                <li><strong>Dados Operacionais:</strong> registros de câmeras, vídeos, frames processados, metadados e logs de auditoria.</li>
+                <li><strong>Dados Técnicos:</strong> endereço IP, navegador, sistema operacional e cookies essenciais à sessão autenticada.</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="space-y-3">
+        <h2 class="text-xl font-semibold text-slate-800">2. Finalidades do Tratamento</h2>
+        <p class="text-slate-600">
+            Utilizamos os dados coletados para viabilizar a operação do Sistema, incluindo:
+        </p>
+        <ul class="list-disc list-inside text-slate-600 space-y-1">
+            <li>Gerenciar credenciais, perfis e permissões de acesso.</li>
+            <li>Registrar evidências audiovisuais necessárias à segurança pública.</li>
+            <li>Analisar incidentes e gerar relatórios administrativos.</li>
+            <li>Monitorar desempenho, disponibilidade e segurança da aplicação.</li>
+            <li>Cumprir obrigações legais, regulatórias ou de ordem judicial.</li>
+        </ul>
+    </section>
+
+    <section class="space-y-3">
+        <h2 class="text-xl font-semibold text-slate-800">3. Compartilhamento de Dados</h2>
+        <p class="text-slate-600">
+            Não comercializamos dados pessoais. O compartilhamento é restrito a:
+        </p>
+        <ul class="list-disc list-inside text-slate-600 space-y-1">
+            <li>Órgãos públicos competentes, mediante solicitação formal ou obrigação legal.</li>
+            <li>Prestadores de serviço contratados para processamento, armazenamento ou suporte técnico, sujeitos a cláusulas de confidencialidade e proteção de dados.</li>
+            <li>Autoridades judiciais ou regulatórias, quando requisitado.</li>
+        </ul>
+    </section>
+
+    <section class="space-y-3">
+        <h2 class="text-xl font-semibold text-slate-800">4. Retenção e Armazenamento</h2>
+        <p class="text-slate-600">
+            Mantemos os dados apenas pelo tempo necessário às finalidades descritas ou conforme previsto em lei. Após esse período,
+            os registros são eliminados ou anonimizados de forma segura.
+        </p>
+    </section>
+
+    <section class="space-y-3">
+        <h2 class="text-xl font-semibold text-slate-800">5. Direitos dos Titulares</h2>
+        <p class="text-slate-600">
+            Você pode exercer os direitos previstos na legislação aplicável (como a Lei Geral de Proteção de Dados – LGPD), incluindo:
+        </p>
+        <ul class="list-disc list-inside text-slate-600 space-y-1">
+            <li>Confirmar a existência de tratamento e acessar seus dados.</li>
+            <li>Solicitar correção, atualização ou anonimização de informações.</li>
+            <li>Requerer a exclusão de dados tratados com base em consentimento, quando cabível.</li>
+            <li>Revogar consentimentos e obter informações sobre o uso compartilhado.</li>
+        </ul>
+        <p class="text-slate-600">
+            As solicitações devem ser encaminhadas conforme indicado na seção “Contato”.
+        </p>
+    </section>
+
+    <section class="space-y-3">
+        <h2 class="text-xl font-semibold text-slate-800">6. Cookies e Tecnologias Semelhantes</h2>
+        <p class="text-slate-600">
+            Utilizamos cookies essenciais para manter a sessão autenticada e garantir recursos de segurança. Você pode
+            gerenciar cookies pelo seu navegador, mas a desativação de itens essenciais pode limitar funcionalidades.
+        </p>
+    </section>
+
+    <section class="space-y-3">
+        <h2 class="text-xl font-semibold text-slate-800">7. Segurança da Informação</h2>
+        <p class="text-slate-600">
+            Adotamos medidas de segurança físicas, técnicas e administrativas para proteger os dados contra acessos não
+            autorizados, perda, destruição ou alteração. Ainda assim, nenhum sistema é totalmente imune a riscos; por isso,
+            monitoramos continuamente e recomendamos boas práticas aos usuários.
+        </p>
+    </section>
+
+    <section class="space-y-3">
+        <h2 class="text-xl font-semibold text-slate-800">8. Atualizações desta Política</h2>
+        <p class="text-slate-600">
+            Podemos atualizar esta Política a qualquer momento para refletir mudanças legais, operacionais ou tecnológicas.
+            A versão vigente será sempre publicada neste endereço com a data de atualização correspondente.
+        </p>
+    </section>
+
+    <section class="space-y-3">
+        <h2 class="text-xl font-semibold text-slate-800">9. Contato</h2>
+        <p class="text-slate-600">
+            Para exercer seus direitos ou esclarecer dúvidas, entre em contato com o encarregado de dados pelo e-mail
+            <a href="mailto:privacidade@monitoramentourbano.gov.br" class="text-indigo-600 hover:underline">
+                privacidade@monitoramentourbano.gov.br
+            </a>.
+        </p>
+    </section>
+</div>

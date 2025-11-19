@@ -17,8 +17,9 @@ namespace sistema_monitoramento_urbano.Models.Repositorio.Entidades
         public IEnumerable<Camera> BuscarTodos()
         {
             const string sql = @"
-                SELECT Id, Descricao, Latitude, Longitude, Fps
+                SELECT Id, Descricao, Latitude, Longitude, Fps, bo_ativo AS BoAtivo
                 FROM cameras
+                WHERE bo_ativo = true
                 ORDER BY Id DESC;";
             return _dbConnection.Query<Camera>(sql);
         }
@@ -26,9 +27,11 @@ namespace sistema_monitoramento_urbano.Models.Repositorio.Entidades
         public Camera Buscar(int id) 
         {
             const string sql = @"
-                SELECT Id, Descricao, Latitude, Longitude, Fps
+                SELECT Id, Descricao, Latitude, Longitude, Fps, bo_ativo AS BoAtivo
                 FROM public.cameras
-                WHERE Id = @Id;";
+                WHERE Id = @Id
+                  AND bo_ativo = true
+                LIMIT 1;";
             var result = _dbConnection.QuerySingleOrDefault<Camera>(sql, new { Id = id });
 
             if (result is null)
@@ -39,8 +42,8 @@ namespace sistema_monitoramento_urbano.Models.Repositorio.Entidades
         public int Inserir(Camera model)
         {
             const string sql = @"
-                INSERT INTO cameras (Descricao, Latitude, Longitude, Fps)
-                VALUES (@Descricao, @Latitude, @Longitude, @Fps)
+                INSERT INTO cameras (Descricao, Latitude, Longitude, Fps, bo_ativo)
+                VALUES (@Descricao, @Latitude, @Longitude, @Fps, @BoAtivo)
                 RETURNING Id;";  // PostgreSQL retorna o Id da linha inserida
 
             var newId = _dbConnection.ExecuteScalar<int>(sql, new
@@ -48,7 +51,8 @@ namespace sistema_monitoramento_urbano.Models.Repositorio.Entidades
                 model.Descricao,
                 model.Latitude,
                 model.Longitude,
-                model.Fps
+                model.Fps,
+                BoAtivo = true
             });
 
             model.Id = newId;
@@ -77,7 +81,10 @@ namespace sistema_monitoramento_urbano.Models.Repositorio.Entidades
 
         public void Excluir(int id)
         {
-            const string sql = "DELETE FROM cameras WHERE Id = @Id;";
+            const string sql = @"
+                UPDATE cameras
+                SET bo_ativo = false
+                WHERE Id = @Id;";
             _dbConnection.Execute(sql, new { Id = id });
         }
     }

@@ -68,6 +68,7 @@
 @section Scripts {
   <partial name="_ValidationScriptsPartial" />
   <script>
+    const initialTab = '@(ViewBag.ActiveTab ?? "camera")';
     const BASE_ACTIVE = ["bg-white","shadow","ring-1","ring-slate-200"];
     const INACTIVE = ["text-slate-600","hover:text-slate-900"];
 
@@ -96,5 +97,10 @@
     document.querySelectorAll('[role="tab"]').forEach(b => {
       b.addEventListener('click', () => setActiveTab(b));
     });
+
+    const initialButton = document.getElementById(`tabbtn-${initialTab}`);
+    if (initialButton) {
+      setActiveTab(initialButton);
+    }
   </script>
 }
