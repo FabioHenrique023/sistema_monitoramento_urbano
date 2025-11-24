@@ -19,12 +19,6 @@ builder.Services.AddSingleton(sp =>
                ?? Environment.GetEnvironmentVariable("AZURE_SERVICEBUS_CONNECTION_STRING");
     return new ServiceBusClient(conn);
 });
-builder.Services.AddSingleton(sp =>
-{
-    var conn = cfg["Azure:ServiceBus:ConnectionString"]
-               ?? Environment.GetEnvironmentVariable("AZURE_SERVICEBUS_CONNECTION_STRING");
-    return new ServiceBusClient(conn);
-});
 
 builder.Services.AddControllersWithViews();
 
@@ -40,9 +34,12 @@ builder.Services.AddSingleton<ISqlConnectionFactory>(sp =>
 builder.Services.AddScoped<ICameraRepositorio, CameraRepositorio>();
 builder.Services.AddScoped<IVideoRepositorio, VideoRepositorio>();
 builder.Services.AddScoped<IFrameProcessadoRepositorio, FrameProcessadoRepositorio>();
+builder.Services.AddScoped<IVehicleGroupSnapshotRepositorio, VehicleGroupSnapshotRepositorio>();
 builder.Services.AddSingleton<GoogleDriveClient>();
 builder.Services.Configure<CloudinaryOptions>(builder.Configuration.GetSection("Cloudinary"));
+builder.Services.Configure<VehicleStateOptions>(builder.Configuration.GetSection("VehicleState"));
 builder.Services.AddSingleton<ICloudinaryService, CloudinaryService>();
+builder.Services.AddHostedService<VehicleStateBlobConsumer>();
 
 var app = builder.Build();
 
