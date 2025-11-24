@@ -41,6 +41,13 @@ builder.Services.Configure<VehicleStateOptions>(builder.Configuration.GetSection
 builder.Services.AddSingleton<ICloudinaryService, CloudinaryService>();
 builder.Services.AddHostedService<VehicleStateBlobConsumer>();
 
+builder.Services.AddScoped<BlobSasTokenHelper>(sp =>
+{
+    var blobClient = sp.GetRequiredService<BlobServiceClient>();
+    var containerName = cfg["Azure:Storage:ContainerFrames"] ?? "uploadsvideos";
+    return new BlobSasTokenHelper(blobClient, containerName);
+});
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())

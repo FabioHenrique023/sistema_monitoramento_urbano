@@ -1,6 +1,8 @@
 @using sistema_monitoramento_urbano.Models.Repositorio.Entidades
+@using System.Collections.Generic
 @{
     var video = ViewBag.Video as IEnumerable<Video> ?? Enumerable.Empty<Video>();
+    var videoTokenDict = ViewBag.VideoTokenDict as Dictionary<int, string?> ?? new Dictionary<int, string?>();
     var cameras = ViewBag.Camera as IEnumerable<SelectListItem> ?? Enumerable.Empty<SelectListItem>();
     var cameraOptions = ViewBag.CameraOptions as IEnumerable<SelectListItem> ?? cameras;
     var selectedCamera = ViewBag.VideoCameraFiltro as int?;
@@ -72,7 +74,27 @@
         <tr class="hover:bg-gray-50">
           <td class="px-4 py-3 font-medium text-gray-900">@v.Id</td>
           <td class="px-4 py-3">@v.nome_arquivo</td>
-          <td class="px-4 py-3">@v.caminho_arquivo</td>
+          <td class="px-4 py-3">
+            @{
+              string? videoUrl = null;
+              if (videoTokenDict.TryGetValue(v.Id, out var urlToken) && !string.IsNullOrWhiteSpace(urlToken))
+              {
+                videoUrl = urlToken;
+              }
+              else
+              {
+                videoUrl = v.caminho_arquivo;
+              }
+            }
+            @if (!string.IsNullOrWhiteSpace(videoUrl))
+            {
+              <a href="@videoUrl" target="_blank" class="text-indigo-700 hover:underline break-all">@v.caminho_arquivo</a>
+            }
+            else
+            {
+              <span class="text-gray-400">-</span>
+            }
+          </td>
           <td class="px-4 py-3">@v.data_upload</td>
           <td class="px-4 py-3">@v.horario_inicio</td>
           <td class="px-4 py-3">@cameraNome</td>

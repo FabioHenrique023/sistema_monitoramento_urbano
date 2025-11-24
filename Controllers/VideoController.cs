@@ -78,7 +78,7 @@ namespace sistema_monitoramento_urbano.Controllers
                     if (entidade == null)
                     {
                         TempData["Error"] = "Vídeo não encontrado.";
-                        return RedirectToAction("Listar");
+                        return RedirectToAction("Index", "Monitoramento", new { tab = "video" });
                     }
                     model = VideoViewModel.ViewModel(entidade);
                 }
@@ -86,7 +86,7 @@ namespace sistema_monitoramento_urbano.Controllers
                 {
                     _logger.LogError(ex, "Erro ao buscar vídeo {Id}", id);
                     TempData["Error"] = "Erro ao carregar os dados do vídeo.";
-                    return RedirectToAction("Listar");
+                    return RedirectToAction("Index", "Monitoramento", new { tab = "video" });
                 }
             }
 
@@ -135,6 +135,7 @@ namespace sistema_monitoramento_urbano.Controllers
                 var fileName  = Path.GetFileNameWithoutExtension(safeName);
                 var ext       = Path.GetExtension(videoFile.FileName);
                 videoBlobPath = $"cameras/videos/{cameraKey}/{videoKey}/{ts}_{fileName}{ext}";
+                var framesBasePath = $"cameras/frames/{cameraKey}/{videoKey}";
 
                 var blob = videosContainer.GetBlobClient(videoBlobPath);
 
@@ -158,13 +159,37 @@ namespace sistema_monitoramento_urbano.Controllers
                 videoBlobUrl = blob.Uri.ToString();
 
                 Video video = new Video(
-                Path.GetFileName(videoBlobPath),
-                videoBlobUrl,
-                (data_upload ?? DateTime.Now.ToString("dd/MM/yyyy")),
-                string.IsNullOrWhiteSpace(horario_inicio) ? null : horario_inicio[..5],
-                67,
-                camera_id ?? 0);
+                    Path.GetFileName(videoBlobPath),
+                    videoBlobUrl ?? string.Empty,
+                    (data_upload ?? DateTime.Now.ToString("dd/MM/yyyy")),
+                    string.IsNullOrWhiteSpace(horario_inicio) ? "00:00" : horario_inicio[..5],
+                    67,
+                    camera_id ?? 0,
+                    videoBlobPath,
+                    framesBasePath);
                 var idVideo = _videoRepositorio.Inserir(video);
+
+                // Buscar câmera para obter FPS
+                Camera? camera = null;
+                double fpsValue = 1.0;
+                if (camera_id.HasValue)
+                {
+                    try
+                    {
+                        camera = _cameraRepositorio.Buscar(camera_id.Value);
+                        if (camera != null && !string.IsNullOrWhiteSpace(camera.Fps))
+                        {
+                            if (double.TryParse(camera.Fps, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var parsedFps))
+                            {
+                                fpsValue = parsedFps > 0 ? parsedFps : 1.0;
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning(ex, "Não foi possível buscar câmera {CameraId} para obter FPS", camera_id.Value);
+                    }
+                }
 
                 var framesOutputDir = Path.Combine(Path.GetTempPath(), $"frames_{Path.GetFileNameWithoutExtension(tempPath)}");
                 Directory.CreateDirectory(framesOutputDir);
@@ -174,8 +199,9 @@ namespace sistema_monitoramento_urbano.Controllers
                 var framesContainer = _blobServiceClient.GetBlobContainerClient(_framesContainerName);
                 await framesContainer.CreateIfNotExistsAsync(PublicAccessType.None, cancellationToken: ct);
 
-                foreach (var framePath in frameFiles)
+                for (int frameIndex = 0; frameIndex < frameFiles.Count; frameIndex++)
                 {
+                    var framePath = frameFiles[frameIndex];
                     ct.ThrowIfCancellationRequested();
 
                     var frameName  = Path.GetFileName(framePath);
@@ -188,6 +214,13 @@ namespace sistema_monitoramento_urbano.Controllers
                         await frameBlob.UploadAsync(fr, new BlobUploadOptions { HttpHeaders = headers }, ct);
                     }
 
+                    // Calcular minutagem baseado no índice do frame e FPS da câmera
+                    // Como extraímos 1 frame por segundo, cada frame representa 1 segundo do vídeo
+                    var segundosTotais = frameIndex;
+                    var minutos = segundosTotais / 60;
+                    var segundos = segundosTotais % 60;
+                    var minutagem = $"{minutos:D2}:{segundos:D2}";
+
                     var msg = new ProcessarFrameMessage(
                         BlobUrl: frameBlob.Uri.ToString(),
                         BlobPath: frameBlobPath,
@@ -196,7 +229,8 @@ namespace sistema_monitoramento_urbano.Controllers
                         VideoFileName: videoFile.FileName,
                         FrameFileName: frameName,
                         CapturedAtUtc: DateTimeOffset.UtcNow,
-                        VideoId: idVideo
+                        VideoId: idVideo,
+                        Minutagem: minutagem
                     );
 
                     var body = JsonSerializer.Serialize(msg);
@@ -227,10 +261,14 @@ namespace sistema_monitoramento_urbano.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Excluir(int id)
+        public async Task<IActionResult> Excluir(int id)
         {
             try
             {
+                var video = _videoRepositorio.Buscar(id);
+
+                await RemoverBlobsRelacionadosAsync(video, HttpContext.RequestAborted);
+
                 _videoRepositorio.Excluir(id);
                 TempData["Success"] = "Vídeo excluído com sucesso!";
             }
@@ -240,7 +278,48 @@ namespace sistema_monitoramento_urbano.Controllers
                 TempData["Error"] = "Erro ao excluir o vídeo.";
             }
 
-            return RedirectToAction("Listar");
+            return RedirectToAction("Index", "Monitoramento", new { tab = "video" });
+        }
+
+        private async Task RemoverBlobsRelacionadosAsync(Video video, CancellationToken ct)
+        {
+            if (string.IsNullOrWhiteSpace(_framesContainerName))
+            {
+                _logger.LogWarning("Container de frames não configurado; não foi possível remover blobs.");
+                return;
+            }
+
+            var container = _blobServiceClient.GetBlobContainerClient(_framesContainerName);
+
+            if (!string.IsNullOrWhiteSpace(video.blob_path))
+            {
+                var blob = container.GetBlobClient(video.blob_path);
+                await blob.DeleteIfExistsAsync(cancellationToken: ct);
+            }
+            else if (!string.IsNullOrWhiteSpace(video.caminho_arquivo))
+            {
+                try
+                {
+                    var uri = new Uri(video.caminho_arquivo);
+                    var blobName = uri.AbsolutePath.TrimStart('/');
+                    var blob = container.GetBlobClient(blobName);
+                    await blob.DeleteIfExistsAsync(cancellationToken: ct);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Não foi possível interpretar caminho do blob do vídeo {Id}", video.Id);
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(video.frame_prefix))
+            {
+                var prefix = video.frame_prefix.TrimEnd('/') + "/";
+                await foreach (var blobItem in container.GetBlobsAsync(prefix: prefix, cancellationToken: ct))
+                {
+                    var frameBlob = container.GetBlobClient(blobItem.Name);
+                    await frameBlob.DeleteIfExistsAsync(cancellationToken: ct);
+                }
+            }
         }
 
         private void PopulateCamerasSelectList(int? selectedId = null)

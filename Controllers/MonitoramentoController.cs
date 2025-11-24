@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using sistema_monitoramento_urbano.Models.Repositorio;
 using sistema_monitoramento_urbano.Models.Repositorio.Entidades;
 using sistema_monitoramento_urbano.Models.ViewModel;
+using sistema_monitoramento_urbano.Models.Services;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
@@ -14,19 +15,22 @@ namespace sistema_monitoramento_urbano.Controllers
         private readonly ICameraRepositorio _cameraRepo;
         private readonly IVideoRepositorio _videoRepo;
         private readonly IFrameProcessadoRepositorio _frameRepo;
+        private readonly BlobSasTokenHelper _sasHelper;
 
         public MonitoramentoController(
             ICameraRepositorio cameraRepo,
             IVideoRepositorio videoRepo,
-            IFrameProcessadoRepositorio frameRepo)
+            IFrameProcessadoRepositorio frameRepo,
+            BlobSasTokenHelper sasHelper)
         {
             _cameraRepo = cameraRepo;
             _videoRepo = videoRepo;
             _frameRepo  = frameRepo;
+            _sasHelper = sasHelper;
         }
         
         [HttpPost]
-        public async Task<IActionResult> Create(VideoViewModel model, IFormFile? videoFile)
+        public IActionResult Create(VideoViewModel model, IFormFile? videoFile)
         {
             IEnumerable<Camera> cameras = _cameraRepo.BuscarTodos();
                 ViewBag.Camera = new SelectList(
@@ -80,6 +84,16 @@ namespace sistema_monitoramento_urbano.Controllers
             }
             var videosResult = filteredVideos.ToList();
 
+            // Gerar URLs com token SAS para vídeos
+            var videoTokenDict = new Dictionary<int, string?>();
+            foreach (var v in videosResult)
+            {
+                var url = !string.IsNullOrWhiteSpace(v.blob_path)
+                    ? _sasHelper.GetBlobUrlWithSas(v.blob_path)
+                    : _sasHelper.GetBlobUrlWithSasFromFullUrl(v.caminho_arquivo);
+                videoTokenDict[v.Id] = url;
+            }
+
             var filteredFrames = frames.AsEnumerable();
             if (!string.IsNullOrWhiteSpace(framePlaca))
             {
@@ -92,6 +106,16 @@ namespace sistema_monitoramento_urbano.Controllers
                 filteredFrames = filteredFrames.Where(f => f.videos_id == frameVideoId.Value);
             }
             var framesResult = filteredFrames.ToList();
+
+            // Gerar URLs com token SAS para frames
+            var frameTokenDict = new Dictionary<int, string?>();
+            foreach (var f in framesResult)
+            {
+                var url = !string.IsNullOrWhiteSpace(f.caminho_imagem)
+                    ? _sasHelper.GetBlobUrlWithSasFromFullUrl(f.caminho_imagem)
+                    : null;
+                frameTokenDict[f.id] = url;
+            }
 
             var cameraSelectItems = cameras
                 .Select(p => new SelectListItem
@@ -116,7 +140,9 @@ namespace sistema_monitoramento_urbano.Controllers
 
             ViewBag.Cameras = filteredCameras;
             ViewBag.Video = videosResult;
+            ViewBag.VideoTokenDict = videoTokenDict;
             ViewBag.FramesProcessados = framesResult;
+            ViewBag.FrameTokenDict = frameTokenDict;
 
             return View();
         }

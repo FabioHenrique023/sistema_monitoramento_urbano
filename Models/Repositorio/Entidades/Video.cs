@@ -27,9 +27,15 @@ namespace sistema_monitoramento_urbano.Models.Repositorio.Entidades
         [Required]
         public virtual int camera_id { get; set; }
 
+        [MaxLength(500)]
+        public virtual string? blob_path { get; set; }
+
+        [MaxLength(500)]
+        public virtual string? frame_prefix { get; set; }
+
         // Construtor para garantir que todos os campos obrigatórios sejam preenchidos
         [SetsRequiredMembers]
-        public Video(string nome_arquivo, string caminho_arquivo, string data_upload, string horario_inicio, int id_usuario, int camera_id)
+        public Video(string nome_arquivo, string caminho_arquivo, string data_upload, string horario_inicio, int id_usuario, int camera_id, string? blobPath = null, string? framePrefix = null)
         {
             this.nome_arquivo = nome_arquivo;
             this.caminho_arquivo = caminho_arquivo;
@@ -37,6 +43,8 @@ namespace sistema_monitoramento_urbano.Models.Repositorio.Entidades
             this.horario_inicio = horario_inicio;
             this.id_usuario = id_usuario;
             this.camera_id = camera_id;
+            this.blob_path = blobPath;
+            this.frame_prefix = framePrefix;
         }
         
         public Video() { }

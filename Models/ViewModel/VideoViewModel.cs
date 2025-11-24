@@ -29,6 +29,9 @@ namespace sistema_monitoramento_urbano.Models.ViewModel
         [Required(ErrorMessage = "A câmera vinculada é obrigatória.")]
         public override int camera_id { get; set; }
 
+        public override string? blob_path { get; set; }
+        public override string? frame_prefix { get; set; }
+
         public static VideoViewModel ViewModel(Video entidade)
         {
             if (entidade == null)

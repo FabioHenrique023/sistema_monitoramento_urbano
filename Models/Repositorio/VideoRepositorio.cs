@@ -16,7 +16,8 @@ namespace sistema_monitoramento_urbano.Models.Repositorio.Entidades
         public IEnumerable<Video> BuscarTodos()
         {
             const string sql = @"
-                SELECT id, nome_arquivo, caminho_arquivo, data_upload, horario_inicio, id_usuario, camera_id
+                SELECT id, nome_arquivo, caminho_arquivo, data_upload, horario_inicio, id_usuario, camera_id,
+                       blob_path, frame_prefix
                 FROM public.video
                 ORDER BY created_at DESC;";
             return _dbConnection.Query<Video>(sql);
@@ -25,7 +26,8 @@ namespace sistema_monitoramento_urbano.Models.Repositorio.Entidades
         public IEnumerable<Video> BuscarPorCamera(int idCamera)
         {
             const string sql = @"
-                SELECT id, nome_arquivo, caminho_arquivo, data_upload, horario_inicio, id_usuario, camera_id
+                SELECT id, nome_arquivo, caminho_arquivo, data_upload, horario_inicio, id_usuario, camera_id,
+                       blob_path, frame_prefix
                 FROM public.video
                 WHERE camera_id = @idCamera
                 ORDER BY created_at DESC;";
@@ -35,7 +37,8 @@ namespace sistema_monitoramento_urbano.Models.Repositorio.Entidades
         public Video Buscar(int id)
         {
             const string sql = @"
-                SELECT id, nome_arquivo, caminho_arquivo, data_upload, horario_inicio, id_usuario, camera_id
+                SELECT id, nome_arquivo, caminho_arquivo, data_upload, horario_inicio, id_usuario, camera_id,
+                       blob_path, frame_prefix
                 FROM public.video
                 WHERE id = @id;";
             var result = _dbConnection.QuerySingleOrDefault<Video>(sql, new { id });
@@ -49,9 +52,9 @@ namespace sistema_monitoramento_urbano.Models.Repositorio.Entidades
         {
             const string sql = @"
                 INSERT INTO public.video
-                    (nome_arquivo, caminho_arquivo, data_upload, horario_inicio, id_usuario, camera_id)
+                    (nome_arquivo, caminho_arquivo, data_upload, horario_inicio, id_usuario, camera_id, blob_path, frame_prefix)
                 VALUES
-                    (@nome_arquivo, @caminho_arquivo, @data_upload, @horario_inicio, @id_usuario, @camera_id)
+                    (@nome_arquivo, @caminho_arquivo, @data_upload, @horario_inicio, @id_usuario, @camera_id, @blob_path, @frame_prefix)
                 RETURNING id;";
 
             var newId = _dbConnection.ExecuteScalar<int>(sql, new
@@ -61,7 +64,9 @@ namespace sistema_monitoramento_urbano.Models.Repositorio.Entidades
                 model.data_upload,
                 model.horario_inicio,
                 model.id_usuario,
-                model.camera_id
+                model.camera_id,
+                model.blob_path,
+                model.frame_prefix
             });
 
             model.Id = newId;
@@ -79,6 +84,8 @@ namespace sistema_monitoramento_urbano.Models.Repositorio.Entidades
                     horario_inicio = @horario_inicio,
                     id_usuario     = @id_usuario,
                     camera_id      = @camera_id,
+                    blob_path      = @blob_path,
+                    frame_prefix   = @frame_prefix,
                     updated_at     = NOW()
                 WHERE id = @Id;";
 
@@ -90,6 +97,8 @@ namespace sistema_monitoramento_urbano.Models.Repositorio.Entidades
                 model.horario_inicio,
                 model.id_usuario,
                 model.camera_id,
+                model.blob_path,
+                model.frame_prefix,
                 model.Id
             });
         }

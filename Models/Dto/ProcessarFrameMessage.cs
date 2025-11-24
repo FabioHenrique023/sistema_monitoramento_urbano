@@ -8,5 +8,6 @@ public record ProcessarFrameMessage(
     string VideoFileName,
     string FrameFileName,
     DateTimeOffset CapturedAtUtc,
-    int? VideoId
+    int? VideoId,
+    string? Minutagem
 );

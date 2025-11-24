@@ -46,17 +46,17 @@ namespace sistema_monitoramento_urbano.Controllers
                 if (entidade == null)
                 {
                     TempData["Error"] = "Câmera não encontrada.";
-                    return RedirectToAction("Listar");
+                    return RedirectToAction("Index", "Monitoramento", new { tab = "camera" });
                 }
 
                 var model = CameraViewModel.ViewModel(entidade);
-                return PartialView("~/Views/Monitoramento/Camera/_Form.cshtml", model);
+                return RedirectToAction("Index", "Monitoramento", new { tab = "camera" });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Erro ao buscar câmera {Id}", id);
                 TempData["Error"] = "Erro ao carregar os dados da câmera.";
-                return RedirectToAction("Listar");
+                return RedirectToAction("Index", "Monitoramento", new { tab = "camera" });
             }
         }
 
@@ -90,7 +90,7 @@ namespace sistema_monitoramento_urbano.Controllers
             {
                 _logger.LogError(ex, "Erro ao salvar câmera");
                 TempData["Error"] = "Erro ao salvar a câmera.";
-                return PartialView("~/Views/Monitoramento/Camera/_Form.cshtml", model);
+                return RedirectToAction("Index", "Monitoramento", new { tab = "camera" });
             }
         }
 
@@ -110,7 +110,7 @@ namespace sistema_monitoramento_urbano.Controllers
                 TempData["Error"] = "Erro ao excluir a câmera.";
             }
 
-            return RedirectToAction("Listar");
+            return RedirectToAction("Index", "Monitoramento", new { tab = "camera" });
         }
     }
 }

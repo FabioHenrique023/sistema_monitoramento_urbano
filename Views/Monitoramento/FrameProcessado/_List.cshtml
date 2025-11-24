@@ -1,6 +1,8 @@
 @using sistema_monitoramento_urbano.Models.Repositorio.Entidades
+@using System.Collections.Generic
 @{
     var frames = ViewBag.FramesProcessados as IEnumerable<FrameProcessado> ?? Enumerable.Empty<FrameProcessado>();
+    var frameTokenDict = ViewBag.FrameTokenDict as Dictionary<int, string?> ?? new Dictionary<int, string?>();
 }
 <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
   <table class="min-w-full text-sm">
@@ -22,12 +24,27 @@
     {
       foreach (dynamic f in frames)
       {
+        var frameId = (int)f.id;
+        string? frameUrl = null;
+        if (frameTokenDict.TryGetValue(frameId, out var urlToken) && !string.IsNullOrWhiteSpace(urlToken))
+        {
+          frameUrl = urlToken;
+        }
+        else
+        {
+          frameUrl = f.caminho_imagem;
+        }
+        
         <tr class="hover:bg-gray-50">
           <td class="px-4 py-3 font-medium text-gray-900">@f.id</td>
           <td class="px-4 py-3">
-            @if (!string.IsNullOrWhiteSpace(f.caminho_imagem))
+            @if (!string.IsNullOrWhiteSpace(frameUrl))
             {
-              <a href="@f.caminho_imagem?sp=r&amp;st=2025-11-03T11:42:13Z&amp;se=2026-03-14T19:57:13Z&amp;spr=https&amp;sv=2024-11-04&amp;sr=c&amp;sig=M%2FEppzitlKlHCnBpX1kHSu%2FPovfzo848F%2BHojLCCulM%3D" target="_blank" class="text-indigo-700 hover:underline">@f.caminho_imagem</a>
+              <a href="@frameUrl" target="_blank" class="text-indigo-700 hover:underline break-all">@f.caminho_imagem</a>
+            }
+            else
+            {
+              <span class="text-gray-400">-</span>
             }
           </td>
           <td class="px-4 py-3">@f.created_at.ToString("dd/MM/yyyy HH:mm")</td>
