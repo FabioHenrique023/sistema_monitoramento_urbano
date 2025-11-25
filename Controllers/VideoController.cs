@@ -19,7 +19,6 @@ namespace sistema_monitoramento_urbano.Controllers
         private readonly ILogger<VideoController> _logger;
         private readonly IVideoRepositorio _videoRepositorio;
         private readonly ICameraRepositorio _cameraRepositorio;
-        private readonly GoogleDriveClient _drive;
         private readonly ICloudinaryService _cloud;
         private readonly BlobServiceClient _blobServiceClient;
         private readonly string _framesContainerName;
@@ -30,7 +29,6 @@ namespace sistema_monitoramento_urbano.Controllers
             ILogger<VideoController> logger,
             IVideoRepositorio videoRepositorio,
             ICameraRepositorio cameraRepositorio,
-            GoogleDriveClient drive,
             ICloudinaryService cloud,
             BlobServiceClient blobServiceClient,
             IConfiguration config,
@@ -39,7 +37,6 @@ namespace sistema_monitoramento_urbano.Controllers
             _logger = logger;
             _videoRepositorio = videoRepositorio;
             _cameraRepositorio = cameraRepositorio;
-            _drive = drive;
             _cloud = cloud;
             _blobServiceClient = blobServiceClient;
             _framesContainerName = config["Azure:Storage:ContainerFrames"] ?? "frames";

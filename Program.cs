@@ -35,7 +35,6 @@ builder.Services.AddScoped<ICameraRepositorio, CameraRepositorio>();
 builder.Services.AddScoped<IVideoRepositorio, VideoRepositorio>();
 builder.Services.AddScoped<IFrameProcessadoRepositorio, FrameProcessadoRepositorio>();
 builder.Services.AddScoped<IVehicleGroupSnapshotRepositorio, VehicleGroupSnapshotRepositorio>();
-builder.Services.AddSingleton<GoogleDriveClient>();
 builder.Services.Configure<CloudinaryOptions>(builder.Configuration.GetSection("Cloudinary"));
 builder.Services.Configure<VehicleStateOptions>(builder.Configuration.GetSection("VehicleState"));
 builder.Services.AddSingleton<ICloudinaryService, CloudinaryService>();
