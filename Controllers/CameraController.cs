@@ -38,7 +38,7 @@ namespace sistema_monitoramento_urbano.Controllers
         public IActionResult Form(int? id)
         {
             if (id == null)
-                return PartialView("~/Views/Monitoramento/Camera/_Form.cshtml", new CameraViewModel());
+                return RedirectToAction("Index", "Monitoramento", new { tab = "camera" });
 
             try
             {
@@ -68,7 +68,7 @@ namespace sistema_monitoramento_urbano.Controllers
             if (!ModelState.IsValid)
             {
                 TempData["Error"] = "Verifique os campos obrigatórios.";
-                return PartialView("~/Views/Monitoramento/Camera/_Form.cshtml", model);
+                return RedirectToAction("Index", "Monitoramento", new { tab = "camera" });
             }
 
             try

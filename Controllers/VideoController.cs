@@ -91,7 +91,7 @@ namespace sistema_monitoramento_urbano.Controllers
             }
 
             PopulateCamerasSelectList(model.camera_id);
-            return PartialView("~/Views/Monitoramento/Video/_Form.cshtml", model);
+            return RedirectToAction("Index", "Monitoramento", new { tab = "video" });
         }
 
         private static string? GetContentType(string fileName)
